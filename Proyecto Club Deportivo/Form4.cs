@@ -72,6 +72,21 @@ SELECT LAST_INSERT_ID();";
 
                         // Ejecuta la inserción y obtiene el ID del usuario recién insertado
                         usuarioId = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        MessageBox.Show("✅ Usuario registrado exitosamente.", "Registro completado",
+               MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Opcional: limpiar campos después de registrar
+                        nombre_value.Clear();
+                        apellido_value.Clear();
+                        documento_value.Clear();
+                        tel_value.Clear();
+                        email_value.Clear();
+                        nacimiento_value.Clear();
+                        apto_value.SelectedIndex = 0;
+                        genero_value.SelectedIndex = 0;
+                        socio_value.SelectedIndex = 0;
+                        tipoDocu.SelectedIndex = 0;
                     }
 
                     // Insertar en la tabla correspondiente

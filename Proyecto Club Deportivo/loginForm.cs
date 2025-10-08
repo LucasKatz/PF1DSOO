@@ -4,47 +4,54 @@ using MySql.Data.MySqlClient;
 
 namespace Proyecto_Club_Deportivo
 {
-    public partial class ingresoForm : Form
+    // Clase para manejar la conexión a la base de datos
+    public class ConexionBD
     {
-        public ingresoForm()
+        private MySqlConnection conexion;
+
+        public ConexionBD()
+        {
+           
+            string cadenaConexion = "Server=localhost;Database=ProyectoClub;Uid=clubuser;Pwd=Grupo12;";
+
+            conexion = new MySqlConnection(cadenaConexion);
+        }
+
+        public MySqlConnection GetConnection()
+        {
+            return conexion;
+        }
+
+        public bool ProbarConexion()
+        {
+            try
+            {
+                conexion.Open();
+                conexion.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en la conexión: " + ex.Message,
+                    "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+    }
+
+    // Formulario de login
+    public partial class loginForm : Form
+    {
+        public loginForm()
         {
             InitializeComponent();
             textPassword.UseSystemPasswordChar = true; // Ocultar caracteres del password
-            this.Load += ingresoForm_Load; // Asociar evento Load
         }
 
-        public class ConexionBD
+        private void formularioLogin(object sender, EventArgs e)
         {
-            private MySqlConnection conexion;
-
-            public ConexionBD()
-            {
-                string cadenaConexion = "Server=localhost;Database=ProyectoClub;Uid=clubuser;Pwd=Grupo12;";
-                conexion = new MySqlConnection(cadenaConexion);
-            }
-
-            public bool ProbarConexion()
-            {
-                try
-                {
-                    conexion.Open();
-                    conexion.Close();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error en la conexión: " + ex.Message,
-                        "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
-            }
-        }
-
-        // Evento Load del formulario: prueba de conexión
-        private void ingresoForm_Load(object sender, EventArgs e)
-
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            // Probar conexión cuando carga el formulario
             ConexionBD conexion = new ConexionBD();
 
             if (conexion.ProbarConexion())
@@ -59,7 +66,6 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Botón Ingresar
         private void botonIngresar_Click(object sender, EventArgs e)
         {
             string usuario = textUsuario.Text;
@@ -67,37 +73,41 @@ namespace Proyecto_Club_Deportivo
 
             if (usuario == "Admin" && password == "Admin123")
             {
+                // Abrir el formulario principal
                 formPrincipal principal = new formPrincipal();
                 principal.Show();
+
+                // Ocultar el formulario de login
                 this.Hide();
             }
             else
             {
+                // Credenciales incorrectas
                 MessageBox.Show("Credenciales incorrectas", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // Botón Limpiar
         private void botonLimpiar_Click(object sender, EventArgs e)
         {
             textUsuario.Clear();
             textPassword.Clear();
         }
 
-        // Botón Salir
         private void botonSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        // Eventos opcionales si quieres detectar cambios en los TextBox
-        private void textUsuario_TextChanged(object sender, EventArgs e) { }
-        private void textPassword_TextChanged(object sender, EventArgs e) { }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
+        /*private void textUsuario_TextChanged(object sender, EventArgs e)
         {
-            
+            // Opcional: lógica al escribir en usuario
         }
+
+        private void textPassword_TextChanged(object sender, EventArgs e)
+        {
+            // Opcional: lógica al escribir en password
+        }*/
     }
 }
+
