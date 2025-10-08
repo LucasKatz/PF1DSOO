@@ -9,8 +9,8 @@ namespace Proyecto_Club_Deportivo
         public ingresoForm()
         {
             InitializeComponent();
-            textPassword.UseSystemPasswordChar = true; // Ocultar caracteres del password
-            this.Load += ingresoForm_Load; // Asociar evento Load
+            textPassword.UseSystemPasswordChar = true; // para mayor seguridad en password se ocultan caracteres
+            this.Load += ingresoForm_Load;
         }
 
         public class ConexionBD
@@ -40,7 +40,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Evento Load del formulario: prueba de conexión
+        // Aca se prueba la conexión y devuelve mensaje
         private void ingresoForm_Load(object sender, EventArgs e)
 
         {
@@ -59,7 +59,6 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Botón Ingresar
         private void botonIngresar_Click(object sender, EventArgs e)
         {
             string usuario = textUsuario.Text;
@@ -78,26 +77,28 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Botón Limpiar
+
         private void botonLimpiar_Click(object sender, EventArgs e)
         {
             textUsuario.Clear();
             textPassword.Clear();
         }
 
-        // Botón Salir
+
         private void botonSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        // Eventos opcionales si quieres detectar cambios en los TextBox
-        private void textUsuario_TextChanged(object sender, EventArgs e) { }
-        private void textPassword_TextChanged(object sender, EventArgs e) { }
-
+        
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            
+
+        }
+
+        private void ingresoForm_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

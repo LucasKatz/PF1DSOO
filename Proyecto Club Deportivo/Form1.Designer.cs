@@ -61,6 +61,7 @@
             // Usuario
             // 
             Usuario.AutoSize = true;
+            Usuario.ForeColor = SystemColors.ButtonHighlight;
             Usuario.Location = new Point(130, 161);
             Usuario.Name = "Usuario";
             Usuario.Size = new Size(59, 20);
@@ -71,6 +72,7 @@
             // Password
             // 
             Password.AutoSize = true;
+            Password.ForeColor = SystemColors.ButtonHighlight;
             Password.Location = new Point(130, 215);
             Password.Name = "Password";
             Password.Size = new Size(70, 20);
@@ -105,6 +107,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(607, 605);
             Controls.Add(pictureBox1);
             Controls.Add(textPassword);
@@ -116,6 +119,7 @@
             Controls.Add(botonIngresar);
             Name = "ingresoForm";
             Text = "Formulario de Ingreso";
+            Load += ingresoForm_Load_1;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();

@@ -17,22 +17,10 @@ namespace Proyecto_Club_Deportivo
             InitializeComponent();
         }
 
-        private void Form2_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void AltaSocio_Click(object sender, EventArgs e)
         {
             Form4 form4 = new Form4();
             form4.Show();
-        }
-
-        
-
-        private void AltaNoSocio_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void RegistroPago_Click(object sender, EventArgs e)
@@ -43,6 +31,26 @@ namespace Proyecto_Club_Deportivo
         private void RandomFunction_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void pagoCuota_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void inscripcionAct_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listarDeudores_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

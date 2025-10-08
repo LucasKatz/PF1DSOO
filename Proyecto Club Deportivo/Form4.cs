@@ -20,16 +20,16 @@ namespace Proyecto_Club_Deportivo
 
         private void RegistrarSocio()
         {
-            // Tomamos los valores de los TextBox y ComboBox
+            // Se pasan a string los valores de cada comboBox
             string nombre = nombre_value.Text.Trim();
             string apellido = apellido_value.Text.Trim();
             string dni = documento_value.Text.Trim();
             string telefono = tel_value.Text.Trim();
             string email = email_value.Text.Trim();
-            string nacimiento = nacimiento_value.Text.Trim(); // debería ser formato fecha
-            string apto = apto_value.SelectedItem?.ToString(); // "SI" o "NO"
-            string genero = genero_value.SelectedItem?.ToString(); // "MASCULINO" etc.
-            string esSocio = socio_value.SelectedItem?.ToString(); // "SI" o "NO"
+            string nacimiento = nacimiento_value.Text.Trim(); 
+            string apto = apto_value.SelectedItem?.ToString(); 
+            string genero = genero_value.SelectedItem?.ToString(); 
+            string esSocio = socio_value.SelectedItem?.ToString(); 
             string tipoDocumento = tipoDocu.SelectedItem?.ToString();
 
 
@@ -76,7 +76,7 @@ SELECT LAST_INSERT_ID();";
                         MessageBox.Show("✅ Usuario registrado exitosamente.", "Registro completado",
                MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // Opcional: limpiar campos después de registrar
+                        // Limpia los campos después de registrar
                         nombre_value.Clear();
                         apellido_value.Clear();
                         documento_value.Clear();
@@ -145,7 +145,7 @@ SELECT LAST_INSERT_ID();";
             tipoDocu.Items.Add("PASAPORTE");
 
             tipoDocu.SelectedIndex = 0;  // selecciona el primero por defecto
-            tipoDocu.DropDownStyle = ComboBoxStyle.DropDownList;  // evita texto libre
+            tipoDocu.DropDownStyle = ComboBoxStyle.DropDownList;  
 
         }
 
@@ -158,8 +158,7 @@ SELECT LAST_INSERT_ID();";
 
 
 
-        // Este es tu evento ComboBox
-        // Evento ComboBox: se ejecuta al cambiar selección
+       
         private void socio_value_SelectedIndexChanged(object sender, EventArgs e)
         {
             string seleccion = socio_value.SelectedItem.ToString();
@@ -169,7 +168,6 @@ SELECT LAST_INSERT_ID();";
 
 
 
-        // Este es tu evento del botón
         private void registro_Click(object sender, EventArgs e)
         {
 
@@ -183,7 +181,7 @@ SELECT LAST_INSERT_ID();";
 
         private void tel_value_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permitir solo números y teclas de control (como borrar o enter)
+            // No permite letras
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
@@ -214,6 +212,16 @@ SELECT LAST_INSERT_ID();";
         private void tipoDocu_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Form4_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 
