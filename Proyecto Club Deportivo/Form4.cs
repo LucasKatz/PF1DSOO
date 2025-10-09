@@ -15,7 +15,7 @@ namespace Proyecto_Club_Deportivo
 
 
     {
-        private string connectionString = "Server=localhost;Database=proyectoclub;Uid=clubuser;Pwd=Grupo12;";
+        private string connectionString = "Server=localhost;Database=grupo12;Uid=clubuser;Pwd=Grupo12;";
 
 
         private void RegistrarSocio()
@@ -149,20 +149,10 @@ SELECT LAST_INSERT_ID();";
 
         }
 
-
-        private void nombre_value_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-
        
         private void socio_value_SelectedIndexChanged(object sender, EventArgs e)
         {
             string seleccion = socio_value.SelectedItem.ToString();
-
 
         }
 
@@ -174,10 +164,6 @@ SELECT LAST_INSERT_ID();";
             RegistrarSocio();
         }
 
-        private void tel_value_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void tel_value_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -189,35 +175,6 @@ SELECT LAST_INSERT_ID();";
         }
 
 
-        private void email_value_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void nacimiento_value_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void apto_value_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void genero_value_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tipoDocu_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form4_Load(object sender, EventArgs e)
-        {
-
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {

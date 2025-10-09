@@ -1,6 +1,7 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Configuration;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace Proyecto_Club_Deportivo
 {
@@ -19,7 +20,15 @@ namespace Proyecto_Club_Deportivo
 
             public ConexionBD()
             {
-                string cadenaConexion = "Server=localhost;Database=ProyectoClub;Uid=clubuser;Pwd=Grupo12;";
+                //Credenciales en app.Config por cuestiones de seguridad
+                string password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+               
+                string baseConnection = ConfigurationManager.ConnectionStrings["ConexionBD"].ConnectionString;
+
+                
+                string cadenaConexion = string.Format(baseConnection, password);
+
                 conexion = new MySqlConnection(cadenaConexion);
             }
 
@@ -59,12 +68,19 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
+
+        //Boton de Login
         private void botonIngresar_Click(object sender, EventArgs e)
         {
             string usuario = textUsuario.Text;
             string password = textPassword.Text;
 
-            if (usuario == "Admin" && password == "Admin123")
+
+            //Credenciales en app.Config por cuestiones de seguridad
+            string adminUser = ConfigurationManager.AppSettings["AdminUser"];
+            string adminPassword = ConfigurationManager.AppSettings["AdminPassword"];
+
+            if (usuario == adminUser && password == adminPassword)
             {
                 formPrincipal principal = new formPrincipal();
                 principal.Show();
@@ -78,6 +94,8 @@ namespace Proyecto_Club_Deportivo
         }
 
 
+        //Limpia el texto de los campos a completar
+
         private void botonLimpiar_Click(object sender, EventArgs e)
         {
             textUsuario.Clear();
@@ -85,20 +103,14 @@ namespace Proyecto_Club_Deportivo
         }
 
 
+        //Boton para salir de la app
+
         private void botonSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
         
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ingresoForm_Load_1(object sender, EventArgs e)
-        {
-
-        }
+       
     }
 }

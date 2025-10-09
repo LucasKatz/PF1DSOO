@@ -57,7 +57,7 @@
             nombre_value.Name = "nombre_value";
             nombre_value.Size = new Size(226, 27);
             nombre_value.TabIndex = 0;
-            nombre_value.TextChanged += nombre_value_TextChanged;
+            //nombre_value.TextChanged += nombre_value_TextChanged;
             // 
             // documento_value
             // 
@@ -148,7 +148,7 @@
             tel_value.Name = "tel_value";
             tel_value.Size = new Size(226, 27);
             tel_value.TabIndex = 11;
-            tel_value.TextChanged += tel_value_TextChanged;
+            //tel_value.TextChanged += tel_value_TextChanged;
             tel_value.KeyPress += tel_value_KeyPress;
             // 
             // apto_value
@@ -158,7 +158,7 @@
             apto_value.Name = "apto_value";
             apto_value.Size = new Size(151, 28);
             apto_value.TabIndex = 12;
-            apto_value.SelectedIndexChanged += apto_value_SelectedIndexChanged;
+            //apto_value.SelectedIndexChanged += apto_value_SelectedIndexChanged;
             // 
             // genero_value
             // 
@@ -167,7 +167,7 @@
             genero_value.Name = "genero_value";
             genero_value.Size = new Size(151, 28);
             genero_value.TabIndex = 13;
-            genero_value.SelectedIndexChanged += genero_value_SelectedIndexChanged;
+            //genero_value.SelectedIndexChanged += genero_value_SelectedIndexChanged;
             // 
             // Apto
             // 
@@ -195,7 +195,7 @@
             email_value.Name = "email_value";
             email_value.Size = new Size(226, 27);
             email_value.TabIndex = 16;
-            email_value.TextChanged += email_value_TextChanged;
+            //email_value.TextChanged += email_value_TextChanged;
             // 
             // nacimiento
             // 
@@ -214,7 +214,7 @@
             nacimiento_value.PlaceholderText = "dd/mm/aaaa";
             nacimiento_value.Size = new Size(226, 27);
             nacimiento_value.TabIndex = 18;
-            nacimiento_value.TextChanged += nacimiento_value_TextChanged;
+            //nacimiento_value.TextChanged += nacimiento_value_TextChanged;
             // 
             // Género
             // 
@@ -233,7 +233,7 @@
             tipoDocu.Name = "tipoDocu";
             tipoDocu.Size = new Size(151, 28);
             tipoDocu.TabIndex = 20;
-            tipoDocu.SelectedIndexChanged += tipoDocu_SelectedIndexChanged;
+            //tipoDocu.SelectedIndexChanged += tipoDocu_SelectedIndexChanged;
             // 
             // button1
             // 
@@ -274,7 +274,7 @@
             Controls.Add(nombre_value);
             Name = "Form4";
             Text = "Form4";
-            Load += Form4_Load;
+            //Load += Form4_Load;
             ResumeLayout(false);
             PerformLayout();
         }

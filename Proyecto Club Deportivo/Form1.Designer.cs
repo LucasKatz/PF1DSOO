@@ -92,7 +92,7 @@
             textPassword.Name = "textPassword";
             textPassword.Size = new Size(125, 27);
             textPassword.TabIndex = 6;
-            // 
+            //
             // pictureBox1
             // 
             pictureBox1.Image = Properties.Resources.avatar;
@@ -101,7 +101,7 @@
             pictureBox1.Size = new Size(197, 96);
             pictureBox1.TabIndex = 7;
             pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+           
             // 
             // ingresoForm
             // 
@@ -119,7 +119,7 @@
             Controls.Add(botonIngresar);
             Name = "ingresoForm";
             Text = "Formulario de Ingreso";
-            Load += ingresoForm_Load_1;
+     
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();

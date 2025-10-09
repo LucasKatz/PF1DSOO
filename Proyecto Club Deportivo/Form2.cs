@@ -17,12 +17,16 @@ namespace Proyecto_Club_Deportivo
             InitializeComponent();
         }
 
+
+        //Boton que nos lleva al formulario para registrar al usuario
         private void AltaSocio_Click(object sender, EventArgs e)
         {
             Form4 form4 = new Form4();
             form4.Show();
         }
 
+
+        //Si bien estan vacíos, los dejamos porque en algun momento llevarán funciones dentro 
         private void RegistroPago_Click(object sender, EventArgs e)
         {
 
@@ -48,6 +52,7 @@ namespace Proyecto_Club_Deportivo
 
         }
 
+        //Boton de salida de aplicación
         private void button1_Click(object sender, EventArgs e)
         {
             Application.Exit();
