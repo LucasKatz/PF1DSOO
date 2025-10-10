@@ -18,7 +18,7 @@ namespace Proyecto_Club_Deportivo
         private string connectionString = "Server=localhost;Database=grupo12;Uid=clubuser;Pwd=Grupo12;";
 
 
-        private void RegistrarSocio()
+        private void RegistrarAlumno()
         {
             // Se pasan a string los valores de cada comboBox
             string nombre = nombre_value.Text.Trim();
@@ -161,7 +161,7 @@ SELECT LAST_INSERT_ID();";
         private void registro_Click(object sender, EventArgs e)
         {
 
-            RegistrarSocio();
+            RegistrarAlumno();
         }
 
 
