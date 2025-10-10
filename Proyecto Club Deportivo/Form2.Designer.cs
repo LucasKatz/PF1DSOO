@@ -29,11 +29,9 @@
         private void InitializeComponent()
         {
             altaSocio = new Button();
-            registroPago = new Button();
             pagoActividad = new Button();
             pagoCuota = new Button();
             listarDeudores = new Button();
-            inscripcionAct = new Button();
             button1 = new Button();
             SuspendLayout();
             // 
@@ -45,27 +43,17 @@
             altaSocio.TabIndex = 0;
             altaSocio.Text = "Registrar Alumno";
             altaSocio.UseVisualStyleBackColor = true;
-            altaSocio.Click += AltaSocio_Click;
-            // 
-            // registroPago
-            // 
-            registroPago.Location = new Point(114, 246);
-            registroPago.Name = "registroPago";
-            registroPago.Size = new Size(180, 83);
-            registroPago.TabIndex = 2;
-            registroPago.Text = "Registrar Pago";
-            registroPago.UseVisualStyleBackColor = true;
-            registroPago.Click += RegistroPago_Click;
+            altaSocio.Click += RegistrarAlumno_Click;
             // 
             // pagoActividad
             // 
-            pagoActividad.Location = new Point(416, 246);
+            pagoActividad.Location = new Point(416, 226);
             pagoActividad.Name = "pagoActividad";
             pagoActividad.Size = new Size(180, 83);
             pagoActividad.TabIndex = 3;
-            pagoActividad.Text = "Pagar Actividad";
+            pagoActividad.Text = "Registrar Actividad";
             pagoActividad.UseVisualStyleBackColor = true;
-            pagoActividad.Click += RandomFunction_Click;
+            pagoActividad.Click += RegistrarActividad_Click;
             // 
             // pagoCuota
             // 
@@ -73,13 +61,13 @@
             pagoCuota.Name = "pagoCuota";
             pagoCuota.Size = new Size(180, 83);
             pagoCuota.TabIndex = 4;
-            pagoCuota.Text = "Pagar Cuota";
+            pagoCuota.Text = "Registrar Cuota";
             pagoCuota.UseVisualStyleBackColor = true;
             pagoCuota.Click += pagoCuota_Click;
             // 
             // listarDeudores
             // 
-            listarDeudores.Location = new Point(688, 246);
+            listarDeudores.Location = new Point(114, 226);
             listarDeudores.Name = "listarDeudores";
             listarDeudores.Size = new Size(180, 83);
             listarDeudores.TabIndex = 5;
@@ -87,19 +75,9 @@
             listarDeudores.UseVisualStyleBackColor = true;
             listarDeudores.Click += listarDeudores_Click;
             // 
-            // inscripcionAct
-            // 
-            inscripcionAct.Location = new Point(688, 91);
-            inscripcionAct.Name = "inscripcionAct";
-            inscripcionAct.Size = new Size(180, 83);
-            inscripcionAct.TabIndex = 6;
-            inscripcionAct.Text = "Inscribirse a Actividad";
-            inscripcionAct.UseVisualStyleBackColor = true;
-            inscripcionAct.Click += inscripcionAct_Click;
-            // 
             // button1
             // 
-            button1.Location = new Point(943, 356);
+            button1.Location = new Point(474, 356);
             button1.Name = "button1";
             button1.Size = new Size(122, 47);
             button1.TabIndex = 7;
@@ -112,13 +90,11 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
-            ClientSize = new Size(1086, 415);
+            ClientSize = new Size(698, 415);
             Controls.Add(button1);
-            Controls.Add(inscripcionAct);
             Controls.Add(listarDeudores);
             Controls.Add(pagoCuota);
             Controls.Add(pagoActividad);
-            Controls.Add(registroPago);
             Controls.Add(altaSocio);
             Name = "formPrincipal";
             Text = "formPrincipal";
@@ -128,11 +104,9 @@
         #endregion
 
         private Button altaSocio;
-        private Button registroPago;
         private Button pagoActividad;
         private Button pagoCuota;
         private Button listarDeudores;
-        private Button inscripcionAct;
         private Button button1;
     }
 }

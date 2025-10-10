@@ -58,12 +58,12 @@ namespace Proyecto_Club_Deportivo
 
             if (conexion.ProbarConexion())
             {
-                MessageBox.Show("✅ Conexión exitosa a la base de datos", "Conexión",
+                MessageBox.Show("Conexión exitosa a la base de datos", "Conexión",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("❌ Error al conectar con la base de datos", "Conexión",
+                MessageBox.Show(" Error al conectar con la base de datos", "Conexión",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

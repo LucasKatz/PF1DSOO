@@ -35,7 +35,6 @@
             apellido = new Label();
             dni = new Label();
             socio = new Label();
-            socio_value = new ComboBox();
             registro = new Button();
             telefono = new Label();
             tel_value = new TextBox();
@@ -57,7 +56,6 @@
             nombre_value.Name = "nombre_value";
             nombre_value.Size = new Size(226, 27);
             nombre_value.TabIndex = 0;
-            //nombre_value.TextChanged += nombre_value_TextChanged;
             // 
             // documento_value
             // 
@@ -105,22 +103,10 @@
             // 
             // socio
             // 
-            socio.AutoSize = true;
-            socio.ForeColor = SystemColors.ButtonHighlight;
-            socio.Location = new Point(132, 384);
+            socio.Location = new Point(0, 0);
             socio.Name = "socio";
-            socio.Size = new Size(46, 20);
-            socio.TabIndex = 7;
-            socio.Text = "Socio";
-            // 
-            // socio_value
-            // 
-            socio_value.FormattingEnabled = true;
-            socio_value.Location = new Point(339, 384);
-            socio_value.Name = "socio_value";
-            socio_value.Size = new Size(151, 28);
-            socio_value.TabIndex = 8;
-            socio_value.SelectedIndexChanged += socio_value_SelectedIndexChanged;
+            socio.Size = new Size(100, 23);
+            socio.TabIndex = 23;
             // 
             // registro
             // 
@@ -148,32 +134,29 @@
             tel_value.Name = "tel_value";
             tel_value.Size = new Size(226, 27);
             tel_value.TabIndex = 11;
-            //tel_value.TextChanged += tel_value_TextChanged;
             tel_value.KeyPress += tel_value_KeyPress;
             // 
             // apto_value
             // 
             apto_value.FormattingEnabled = true;
-            apto_value.Location = new Point(339, 441);
+            apto_value.Location = new Point(339, 397);
             apto_value.Name = "apto_value";
             apto_value.Size = new Size(151, 28);
             apto_value.TabIndex = 12;
-            //apto_value.SelectedIndexChanged += apto_value_SelectedIndexChanged;
             // 
             // genero_value
             // 
             genero_value.FormattingEnabled = true;
-            genero_value.Location = new Point(339, 495);
+            genero_value.Location = new Point(339, 457);
             genero_value.Name = "genero_value";
             genero_value.Size = new Size(151, 28);
             genero_value.TabIndex = 13;
-            //genero_value.SelectedIndexChanged += genero_value_SelectedIndexChanged;
             // 
             // Apto
             // 
             Apto.AutoSize = true;
             Apto.ForeColor = SystemColors.ButtonHighlight;
-            Apto.Location = new Point(132, 441);
+            Apto.Location = new Point(132, 400);
             Apto.Name = "Apto";
             Apto.Size = new Size(83, 20);
             Apto.TabIndex = 14;
@@ -195,7 +178,6 @@
             email_value.Name = "email_value";
             email_value.Size = new Size(226, 27);
             email_value.TabIndex = 16;
-            //email_value.TextChanged += email_value_TextChanged;
             // 
             // nacimiento
             // 
@@ -214,13 +196,12 @@
             nacimiento_value.PlaceholderText = "dd/mm/aaaa";
             nacimiento_value.Size = new Size(226, 27);
             nacimiento_value.TabIndex = 18;
-            //nacimiento_value.TextChanged += nacimiento_value_TextChanged;
             // 
             // Género
             // 
             Género.AutoSize = true;
             Género.ForeColor = SystemColors.ButtonHighlight;
-            Género.Location = new Point(132, 495);
+            Género.Location = new Point(132, 457);
             Género.Name = "Género";
             Género.Size = new Size(57, 20);
             Género.TabIndex = 19;
@@ -233,7 +214,6 @@
             tipoDocu.Name = "tipoDocu";
             tipoDocu.Size = new Size(151, 28);
             tipoDocu.TabIndex = 20;
-            //tipoDocu.SelectedIndexChanged += tipoDocu_SelectedIndexChanged;
             // 
             // button1
             // 
@@ -264,7 +244,6 @@
             Controls.Add(tel_value);
             Controls.Add(telefono);
             Controls.Add(registro);
-            Controls.Add(socio_value);
             Controls.Add(socio);
             Controls.Add(dni);
             Controls.Add(apellido);
@@ -274,7 +253,6 @@
             Controls.Add(nombre_value);
             Name = "Form4";
             Text = "Form4";
-            //Load += Form4_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -303,7 +281,6 @@
         private TextBox nombre_value;
         private TextBox documento_value;
         private TextBox apellido_value;
-        private ComboBox socio_value;
         private TextBox tel_value;
         private ComboBox apto_value;
         private ComboBox genero_value;

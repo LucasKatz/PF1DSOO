@@ -19,20 +19,15 @@ namespace Proyecto_Club_Deportivo
 
 
         //Boton que nos lleva al formulario para registrar al usuario
-        private void AltaSocio_Click(object sender, EventArgs e)
+        private void RegistrarAlumno_Click(object sender, EventArgs e)
         {
             Form4 form4 = new Form4();
             form4.Show();
         }
 
 
-        //Si bien estan vacíos, los dejamos porque en algun momento llevarán funciones dentro 
-        private void RegistroPago_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void RandomFunction_Click(object sender, EventArgs e)
+        private void RegistrarActividad_Click(object sender, EventArgs e)
         {
 
         }
@@ -42,10 +37,7 @@ namespace Proyecto_Club_Deportivo
 
         }
 
-        private void inscripcionAct_Click(object sender, EventArgs e)
-        {
 
-        }
 
         private void listarDeudores_Click(object sender, EventArgs e)
         {
@@ -57,5 +49,7 @@ namespace Proyecto_Club_Deportivo
         {
             Application.Exit();
         }
+
+
     }
 }
