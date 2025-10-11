@@ -1,12 +1,14 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Configuration;
 using System.Windows.Forms;
 
 namespace Proyecto_Club_Deportivo
 {
     public partial class Form4 : Form
     {
-        private string connectionString = "Server=localhost;Database=grupo12;Uid=clubuser;Pwd=Grupo12;";
+        // Lee la cadena de conexión desde App.config
+        private string connectionString = ConfigurationManager.ConnectionStrings["ConexionBD"].ConnectionString;
 
         public Form4()
         {
@@ -46,12 +48,12 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            // Crear un objeto con los datos del formulario
+            // Se crea un objeto con los valores del Alumno
             Alumno nuevoAlumno = new Alumno
             {
                 Nombre = nombre_value.Text.Trim(),
                 Apellido = apellido_value.Text.Trim(),
-                DNI = documento_value.Text.Trim(),
+                DNI = documento_value.Text.Trim(),//lleva ese nombre para no generar confusión con ID de BB DD
                 Telefono = tel_value.Text.Trim(),
                 Email = email_value.Text.Trim(),
                 Nacimiento = nacimiento_value.Text.Trim(),
@@ -60,11 +62,46 @@ namespace Proyecto_Club_Deportivo
                 TipoDocumento = tipoDocu.SelectedItem?.ToString()
             };
 
-            // Abrir el siguiente formulario y pasarle el alumno
+            // Se busca si el alumno ya existe
+            if (AlumnoYaRegistrado(nuevoAlumno.TipoDocumento, nuevoAlumno.DNI))
+            {
+                MessageBox.Show("El alumno ya se encuentra registrado en la base de datos.",
+                    "Registro duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Si no existe, redirige al Form5
             Form5 opcionesForm = new Form5(nuevoAlumno, connectionString);
             opcionesForm.Show();
-
             this.Hide();
+        }
+
+
+
+        //funcion que busca al alumno para chequear que no este registrado
+        private bool AlumnoYaRegistrado(string tipoDocumento, string dni)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM usuariosRegistrados WHERE tipo_documento = @tipo AND dni = @dni";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@tipo", tipoDocumento);
+                    cmd.Parameters.AddWithValue("@dni", dni);
+
+                    try
+                    {
+                        conn.Open();
+                        int count = Convert.ToInt32(cmd.ExecuteScalar());
+                        return count > 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error al verificar el alumno: " + ex.Message);
+                        return false;
+                    }
+                }
+            }
         }
 
         private void tel_value_KeyPress(object sender, KeyPressEventArgs e)
@@ -87,7 +124,7 @@ namespace Proyecto_Club_Deportivo
         }
     }
 
-    // Clase auxiliar para transferir los datos del alumno
+    // Se crea la clase Alumno para luego enviar sus datos a otro form
     public class Alumno
     {
         public string Nombre { get; set; }
@@ -101,4 +138,5 @@ namespace Proyecto_Club_Deportivo
         public string TipoDocumento { get; set; }
     }
 }
+
 
