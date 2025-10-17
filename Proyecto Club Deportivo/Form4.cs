@@ -39,12 +39,19 @@ namespace Proyecto_Club_Deportivo
 
         private void registro_Click(object sender, EventArgs e)
         {
-            // Validación básica
-            if (string.IsNullOrEmpty(nombre_value.Text) ||
-                string.IsNullOrEmpty(apellido_value.Text) ||
-                string.IsNullOrEmpty(documento_value.Text))
+            // ✅ VALIDACIÓN COMPLETA DE CAMPOS OBLIGATORIOS
+            if (string.IsNullOrWhiteSpace(nombre_value.Text) ||
+                string.IsNullOrWhiteSpace(apellido_value.Text) ||
+                string.IsNullOrWhiteSpace(documento_value.Text) ||
+                string.IsNullOrWhiteSpace(tel_value.Text) ||
+                string.IsNullOrWhiteSpace(email_value.Text) ||
+                string.IsNullOrWhiteSpace(nacimiento_value.Text) ||
+                apto_value.SelectedItem == null ||
+                genero_value.SelectedItem == null ||
+                tipoDocu.SelectedItem == null)
             {
-                MessageBox.Show("Por favor completá los campos obligatorios antes de continuar.");
+                MessageBox.Show("Por favor, completá todos los campos antes de continuar.",
+                    "Campos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -53,7 +60,7 @@ namespace Proyecto_Club_Deportivo
             {
                 Nombre = nombre_value.Text.Trim(),
                 Apellido = apellido_value.Text.Trim(),
-                DNI = documento_value.Text.Trim(),//lleva ese nombre para no generar confusión con ID de BB DD
+                DNI = documento_value.Text.Trim(),
                 Telefono = tel_value.Text.Trim(),
                 Email = email_value.Text.Trim(),
                 Nacimiento = nacimiento_value.Text.Trim(),
@@ -76,9 +83,7 @@ namespace Proyecto_Club_Deportivo
             this.Hide();
         }
 
-
-
-        //funcion que busca al alumno para chequear que no este registrado
+        // Función que busca al alumno para chequear que no esté registrado
         private bool AlumnoYaRegistrado(string tipoDocumento, string dni)
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
@@ -117,14 +122,9 @@ namespace Proyecto_Club_Deportivo
         {
             Application.Exit();
         }
-
-        private void socio_value_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 
-    // Se crea la clase Alumno para luego enviar sus datos a otro form
+    // Clase Alumno para enviar los datos al siguiente formulario
     public class Alumno
     {
         public string Nombre { get; set; }
@@ -138,5 +138,4 @@ namespace Proyecto_Club_Deportivo
         public string TipoDocumento { get; set; }
     }
 }
-
 

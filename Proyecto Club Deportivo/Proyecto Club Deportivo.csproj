@@ -10,14 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Form3.cs" />
-    <Compile Remove="Form3.Designer.cs" />
     <Compile Remove="loginForm.cs" />
     <Compile Remove="loginForm.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="Form3.resx" />
     <EmbeddedResource Remove="loginForm.resx" />
   </ItemGroup>
 

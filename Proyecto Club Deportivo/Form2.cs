@@ -29,7 +29,8 @@ namespace Proyecto_Club_Deportivo
 
         private void RegistrarActividad_Click(object sender, EventArgs e)
         {
-
+            FormActividades form = new FormActividades();
+            form.ShowDialog();
         }
 
         private void pagoCuota_Click(object sender, EventArgs e)

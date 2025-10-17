@@ -1,6 +1,6 @@
 ﻿namespace Proyecto_Club_Deportivo
 {
-    partial class inscripcionForm
+    partial class FormActividades
     {
         /// <summary>
         /// Required designer variable.
@@ -28,19 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            dgvActividades = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvActividades).BeginInit();
             SuspendLayout();
             // 
-            // inscripcionForm
+            // dgvActividades
+            // 
+            dgvActividades.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvActividades.Location = new Point(1, 0);
+            dgvActividades.Name = "dgvActividades";
+            dgvActividades.RowHeadersWidth = 51;
+            dgvActividades.Size = new Size(801, 453);
+            dgvActividades.TabIndex = 0;
+            // 
+            // FormActividades
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Name = "inscripcionForm";
-            Text = "inscripcionForm";
-            Load += inscripcionForm_Load;
+            Controls.Add(dgvActividades);
+            Name = "FormActividades";
+            Text = "Actividades";
+            ((System.ComponentModel.ISupportInitialize)dgvActividades).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
+
+        private DataGridView dgvActividades;
     }
 }
