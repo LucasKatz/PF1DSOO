@@ -36,7 +36,8 @@ namespace Proyecto_Club_Deportivo
                 try
                 {
                     conexion.Open();
-                    string query = "SELECT id, nombre, precio FROM Actividades";
+                    // 📌 Excluimos la actividad 'CUOTA' o 'Cuota mensual' según el nombre en la base
+                    string query = "SELECT id, nombre, precio FROM Actividades WHERE UPPER(nombre) <> 'CUOTA' AND UPPER(nombre) <> 'CUOTA MENSUAL'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     using (MySqlDataAdapter da = new MySqlDataAdapter(cmd))
@@ -56,6 +57,7 @@ namespace Proyecto_Club_Deportivo
                 }
             }
         }
+
 
         // 📌 Mostrar precio automáticamente al seleccionar una actividad
         private void comboActividad_SelectedIndexChanged(object sender, EventArgs e)
@@ -86,6 +88,7 @@ namespace Proyecto_Club_Deportivo
         }
 
         // 📌 Buscar usuario en la base de datos
+        // 📌 Buscar usuario en la base de datos
         private void buscar_Click(object sender, EventArgs e)
         {
             string tipo = tipoDocu.SelectedItem.ToString();
@@ -104,10 +107,10 @@ namespace Proyecto_Club_Deportivo
                     conexion.Open();
 
                     string query = @"SELECT u.id, u.nombre, u.apellido,
-                                            CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
-                                     FROM usuariosRegistrados u
-                                     LEFT JOIN Socios s ON u.id = s.usuario_id
-                                     WHERE u.tipo_documento = @tipo AND u.dni = @dni;";
+                                    CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
+                             FROM usuariosRegistrados u
+                             LEFT JOIN Socios s ON u.id = s.usuario_id
+                             WHERE u.tipo_documento = @tipo AND u.dni = @dni;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     {
@@ -121,11 +124,22 @@ namespace Proyecto_Club_Deportivo
                                 txtNombre.Text = reader["nombre"].ToString();
                                 txtApellido.Text = reader["apellido"].ToString();
                                 txtSocio.Text = reader["socio"].ToString();
-                                txtUserID.Text = reader["id"].ToString(); // Campo oculto o no visible
+                                txtUserID.Text = reader["id"].ToString();
+
+                                // 📌 Ahora aplicamos el filtro según si es socio o no
+                                if (reader["socio"].ToString() == "SI")
+                                {
+                                    CargarSoloCuota(); // Muestra solo "Cuota mensual"
+                                }
+                                else
+                                {
+                                    CargarActividades(); // Muestra todas las actividades
+                                }
                             }
                             else
                             {
                                 MessageBox.Show("No se encontró ningún usuario con esos datos.");
+                                LimpiarCampos();
                             }
                         }
                     }
@@ -135,6 +149,37 @@ namespace Proyecto_Club_Deportivo
                     MessageBox.Show("Error al buscar el usuario: " + ex.Message);
                 }
             }
+        }
+
+        // 📌 Cargar solo la opción "Cuota mensual"
+        private void CargarSoloCuota()
+        {
+            comboActividad.DataSource = null;
+            DataTable dt = new DataTable();
+            dt.Columns.Add("id", typeof(int));
+            dt.Columns.Add("nombre", typeof(string));
+            dt.Columns.Add("precio", typeof(decimal));
+
+            // Supongamos que la cuota mensual cuesta 5000 (puedes reemplazarlo con un valor real)
+            dt.Rows.Add(0, "Cuota mensual", 5000);
+
+            comboActividad.DataSource = dt;
+            comboActividad.DisplayMember = "nombre";
+            comboActividad.ValueMember = "id";
+            comboActividad.SelectedIndex = 0;
+
+            txtPrecio.Text = "5000"; // Muestra precio predeterminado
+        }
+
+        // 📌 Limpiar campos del formulario (opcional)
+        private void LimpiarCampos()
+        {
+            txtNombre.Clear();
+            txtApellido.Clear();
+            txtSocio.Clear();
+            txtUserID.Clear();
+            comboActividad.DataSource = null;
+            txtPrecio.Clear();
         }
 
         // 📌 Registrar el pago en la base de datos
