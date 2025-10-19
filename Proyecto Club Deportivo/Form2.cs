@@ -35,7 +35,8 @@ namespace Proyecto_Club_Deportivo
 
         private void pagoCuota_Click(object sender, EventArgs e)
         {
-
+            registroCuota form = new registroCuota();
+            form.ShowDialog();
         }
 
 

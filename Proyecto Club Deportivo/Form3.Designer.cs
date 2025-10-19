@@ -38,14 +38,14 @@
             dgvActividades.Location = new Point(1, 0);
             dgvActividades.Name = "dgvActividades";
             dgvActividades.RowHeadersWidth = 51;
-            dgvActividades.Size = new Size(801, 453);
+            dgvActividades.Size = new Size(1303, 679);
             dgvActividades.TabIndex = 0;
             // 
             // FormActividades
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1301, 674);
             Controls.Add(dgvActividades);
             Name = "FormActividades";
             Text = "Actividades";

@@ -40,7 +40,7 @@ namespace Proyecto_Club_Deportivo
                 using (MySqlConnection conexion = new MySqlConnection(connectionString))
                 {
                     conexion.Open();
-                    MessageBox.Show("✅ Conexión exitosa a la base de datos");
+                   // MessageBox.Show("✅ Conexión exitosa a la base de datos");
                     return true;
                 }
             }
@@ -60,25 +60,27 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
-                    string query = @"SELECT id, nombre, rango_min, rango_max, cupoTotal, cupoDisponible, horario, precio 
+                    string query = @"SELECT  nombre, rango_min, rango_max, cupoTotal, cupoDisponible, horario, precio 
                                      FROM Actividades;";
                     MySqlDataAdapter adapter = new MySqlDataAdapter(query, conexion);
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
-                    // Mostrar cantidad de filas cargadas (para debug)
-                    MessageBox.Show("Filas encontradas: " + dt.Rows.Count);
+                    
+                    //MessageBox.Show("Filas encontradas: " + dt.Rows.Count);
 
                     dgvActividades.DataSource = dt;
                     dgvActividades.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                    // Cambiar encabezados si querés
                     dgvActividades.Columns["rango_min"].HeaderText = "Edad Mínima";
                     dgvActividades.Columns["rango_max"].HeaderText = "Edad Máxima";
 
-                    // Estilo opcional para que no se vea gris
+                    // Estilos
                     dgvActividades.BackgroundColor = Color.White;
                     dgvActividades.EnableHeadersVisualStyles = true;
+                    // Permitir múltiples líneas en las celdas
+                    dgvActividades.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                    dgvActividades.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 }
             }
             catch (Exception ex)
