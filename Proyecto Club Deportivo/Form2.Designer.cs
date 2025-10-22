@@ -61,7 +61,7 @@
             pagoCuota.Name = "pagoCuota";
             pagoCuota.Size = new Size(180, 83);
             pagoCuota.TabIndex = 4;
-            pagoCuota.Text = "Registrar Cuota";
+            pagoCuota.Text = "Registrar Pago";
             pagoCuota.UseVisualStyleBackColor = true;
             pagoCuota.Click += pagoCuota_Click;
             // 

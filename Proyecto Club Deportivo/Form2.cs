@@ -26,12 +26,14 @@ namespace Proyecto_Club_Deportivo
         }
 
 
-
+        //Boton que nos muestra el listado de actividades con sus respectivos datos
         private void RegistrarActividad_Click(object sender, EventArgs e)
         {
             FormActividades form = new FormActividades();
             form.ShowDialog();
         }
+
+        //Boton que nos lleva al formulario de registro de pagos
 
         private void pagoCuota_Click(object sender, EventArgs e)
         {
@@ -39,7 +41,7 @@ namespace Proyecto_Club_Deportivo
             form.ShowDialog();
         }
 
-
+        //Boton que nos muestra el listado de deudores
 
         private void listarDeudores_Click(object sender, EventArgs e)
         {

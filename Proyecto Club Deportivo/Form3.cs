@@ -40,7 +40,7 @@ namespace Proyecto_Club_Deportivo
                 using (MySqlConnection conexion = new MySqlConnection(connectionString))
                 {
                     conexion.Open();
-                   // MessageBox.Show("✅ Conexión exitosa a la base de datos");
+                    // MessageBox.Show("✅ Conexión exitosa a la base de datos");
                     return true;
                 }
             }
@@ -66,7 +66,7 @@ namespace Proyecto_Club_Deportivo
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
-                    
+
                     //MessageBox.Show("Filas encontradas: " + dt.Rows.Count);
 
                     dgvActividades.DataSource = dt;
@@ -87,6 +87,30 @@ namespace Proyecto_Club_Deportivo
             {
                 MessageBox.Show("Error al cargar las actividades: " + ex.Message);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close(); // Cierra el form actual
+
+            // Busca si formPrincipal sigue abierto en memoria
+            formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
+
+            if (principal != null)
+            {
+                principal.Show();
+            }
+            else
+            {
+                // Si por alguna razón no estaba abierto, lo crea de nuevo
+                principal = new formPrincipal();
+                principal.Show();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

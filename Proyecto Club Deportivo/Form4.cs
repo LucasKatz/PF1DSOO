@@ -122,6 +122,26 @@ namespace Proyecto_Club_Deportivo
         {
             Application.Exit();
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close(); // Cierra el form actual
+
+            // Busca si formPrincipal sigue abierto en memoria
+            formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
+
+            if (principal != null)
+            {
+                principal.Show();
+            }
+            else
+            {
+                // Si por alguna razón no estaba abierto, lo crea de nuevo
+                principal = new formPrincipal();
+                principal.Show();
+            }
+        }
+
     }
 
     // Clase Alumno para enviar los datos al siguiente formulario

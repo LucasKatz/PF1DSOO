@@ -44,6 +44,8 @@
             txtPrecio = new TextBox();
             btnRegistrarPago = new Button();
             txtUserID = new TextBox();
+            button1 = new Button();
+            button2 = new Button();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -167,7 +169,7 @@
             // 
             btnRegistrarPago.Location = new Point(601, 462);
             btnRegistrarPago.Name = "btnRegistrarPago";
-            btnRegistrarPago.Size = new Size(94, 29);
+            btnRegistrarPago.Size = new Size(190, 29);
             btnRegistrarPago.TabIndex = 14;
             btnRegistrarPago.Text = "Registrar Pago";
             btnRegistrarPago.UseVisualStyleBackColor = true;
@@ -181,11 +183,33 @@
             txtUserID.TabIndex = 15;
             txtUserID.Visible = false;
             // 
+            // button1
+            // 
+            button1.Location = new Point(1082, 631);
+            button1.Name = "button1";
+            button1.Size = new Size(94, 29);
+            button1.TabIndex = 16;
+            button1.Text = "Salir";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(945, 631);
+            button2.Name = "button2";
+            button2.Size = new Size(94, 29);
+            button2.TabIndex = 17;
+            button2.Text = "Volver";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // registroCuota
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1359, 698);
+            Controls.Add(button2);
+            Controls.Add(button1);
             Controls.Add(txtUserID);
             Controls.Add(btnRegistrarPago);
             Controls.Add(txtPrecio);
@@ -203,7 +227,7 @@
             Controls.Add(tipoDocu);
             Controls.Add(TipoDocuRegistroPago);
             Name = "registroCuota";
-            Text = "Registro Cuota";
+            Text = "Registro Pago";
             Load += registroCuota_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -227,5 +251,7 @@
         private TextBox txtPrecio;
         private Button btnRegistrarPago;
         private TextBox txtUserID;
+        private Button button1;
+        private Button button2;
     }
 }

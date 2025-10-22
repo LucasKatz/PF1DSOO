@@ -3,6 +3,11 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Windows.Forms;
+using iTextSharp.text;
+using System.Drawing;
+using iTextSharp.text.pdf;
+using System.IO;
+
 
 namespace Proyecto_Club_Deportivo
 {
@@ -197,8 +202,7 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            decimal precio;
-            if (!decimal.TryParse(txtPrecio.Text, out precio))
+            if (!decimal.TryParse(txtPrecio.Text, out decimal precio))
             {
                 MessageBox.Show("Precio inválido.");
                 return;
@@ -207,6 +211,7 @@ namespace Proyecto_Club_Deportivo
             int usuarioId = Convert.ToInt32(txtUserID.Text);
             int actividadId = Convert.ToInt32(comboActividad.SelectedValue);
             DateTime fechaPago = DateTime.Now;
+            DateTime fechaVencimiento = fechaPago.AddMonths(1); // Ejemplo: vence en 1 mes
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
             {
@@ -215,7 +220,7 @@ namespace Proyecto_Club_Deportivo
                     conexion.Open();
 
                     string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago)
-                                           VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago);";
+                                   VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago);";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertQuery, conexion))
                     {
@@ -223,15 +228,124 @@ namespace Proyecto_Club_Deportivo
                         cmd.Parameters.AddWithValue("@actividad_id", actividadId);
                         cmd.Parameters.AddWithValue("@monto", precio);
                         cmd.Parameters.AddWithValue("@fecha_pago", fechaPago);
-
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Pago registrado correctamente.");
                     }
+
+                    // ✅ Después del registro, generar el PDF
+                    GenerarComprobantePDF(
+                        txtNombre.Text,
+                        txtApellido.Text,
+                        tipoDocu.SelectedItem.ToString(),
+                        docuValue.Text,
+                        precio.ToString("0.00"),
+                        comboActividad.Text,
+                        fechaPago,
+                        fechaVencimiento
+                    );
+
+                    MessageBox.Show("Pago registrado correctamente. Se generó el comprobante en formato PDF.");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error al registrar el pago: " + ex.Message);
                 }
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close(); // Cierra el form actual
+
+            // Busca si formPrincipal sigue abierto en memoria
+            formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
+
+            if (principal != null)
+            {
+                principal.Show();
+            }
+            else
+            {
+                // Si por alguna razón no estaba abierto, lo crea de nuevo
+                principal = new formPrincipal();
+                principal.Show();
+            }
+        }
+
+
+        private void GenerarComprobantePDF(string nombre, string apellido, string tipoDoc, string numeroDoc,
+                                     string monto, string concepto, DateTime fechaPago, DateTime fechaVencimiento)
+        {
+            try
+            {
+                // 📂 Carpeta de destino: Escritorio\Comprobantes
+                string carpetaComprobantes = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    "Comprobantes"
+                );
+
+                // Crear carpeta si no existe
+                if (!Directory.Exists(carpetaComprobantes))
+                    Directory.CreateDirectory(carpetaComprobantes);
+
+                // 🧾 Nombre del archivo (con fecha y hora)
+                string nombreArchivo = $"Comprobante_{nombre}_{apellido}_{fechaPago:yyyyMMdd_HHmmss}.pdf";
+                string rutaArchivo = Path.Combine(carpetaComprobantes, nombreArchivo);
+
+                // 📄 Crear el documento PDF
+                Document doc = new Document(PageSize.A4, 40, 40, 40, 40);
+                PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
+                doc.Open();
+
+                // 🏷️ Título centrado
+                Paragraph titulo = new Paragraph("Comprobante de Pago",
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD));
+                titulo.Alignment = Element.ALIGN_CENTER;
+                doc.Add(titulo);
+                doc.Add(new Paragraph(" "));
+                doc.Add(new Paragraph(" "));
+
+                // 📋 Tabla con los datos del pago
+                PdfPTable tabla = new PdfPTable(2);
+                tabla.WidthPercentage = 100;
+
+                tabla.AddCell("Nombre:");
+                tabla.AddCell(nombre);
+                tabla.AddCell("Apellido:");
+                tabla.AddCell(apellido);
+                tabla.AddCell("Tipo y N° de documento:");
+                tabla.AddCell($"{tipoDoc} {numeroDoc}");
+                tabla.AddCell("Monto pagado:");
+                tabla.AddCell($"$ {monto}");
+                tabla.AddCell("Concepto pagado:");
+                tabla.AddCell(concepto);
+                tabla.AddCell("Fecha de pago:");
+                tabla.AddCell(fechaPago.ToString("dd/MM/yyyy"));
+                tabla.AddCell("Vencimiento:");
+                tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
+
+                doc.Add(tabla);
+
+                doc.Add(new Paragraph(" "));
+                doc.Add(new Paragraph("Gracias por su pago.",
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
+
+                doc.Close();
+
+                // ✅ Abrir automáticamente el PDF
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = rutaArchivo,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al generar el PDF: " + ex.Message);
             }
         }
 
