@@ -26,17 +26,19 @@ namespace Proyecto_Club_Deportivo
 
                     // 🗓️ Consulta: usuarios cuyos pagos vencen HOY
                     string query = @"
-                u.id AS UsuarioID,
-                    u.nombre AS Nombre,
-                    u.apellido AS Apellido,
-                    a.nombre AS Actividad,
-                    p.monto AS Monto,
-                    DATE(p.fecha_pago) AS FechaPago,
-                    DATE(p.fecha_vencimiento) AS FechaVencimiento
-                FROM Pagos p
-                INNER JOIN usuariosRegistrados u ON p.usuario_id = u.id
-                LEFT JOIN Actividades a ON p.actividad_id = a.id
-                WHERE DATE(p.fecha_vencimiento) = CURDATE();";
+SELECT 
+    u.id AS UsuarioID,
+    u.nombre AS Nombre,
+    u.apellido AS Apellido,
+    a.nombre AS Actividad,
+    p.monto AS Monto,
+    DATE(p.fecha_vencimiento) AS FechaVencimiento
+FROM Pagos p
+INNER JOIN usuariosRegistrados u ON p.usuario_id = u.id
+LEFT JOIN Actividades a ON p.actividad_id = a.id
+WHERE DATE(p.fecha_vencimiento) = CURDATE();
+";
+
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     using (MySqlDataAdapter da = new MySqlDataAdapter(cmd))

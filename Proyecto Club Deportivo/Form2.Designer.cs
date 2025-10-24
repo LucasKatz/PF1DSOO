@@ -71,7 +71,7 @@
             listarDeudores.Name = "listarDeudores";
             listarDeudores.Size = new Size(180, 83);
             listarDeudores.TabIndex = 5;
-            listarDeudores.Text = "Listado de Deudores";
+            listarDeudores.Text = "Listar Vencimientos";
             listarDeudores.UseVisualStyleBackColor = true;
             listarDeudores.Click += listarDeudores_Click;
             // 
