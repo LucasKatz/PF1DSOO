@@ -56,7 +56,7 @@ namespace Proyecto_Club_Deportivo
             }
 
             // Se crea un objeto con los valores del Alumno
-            Alumno nuevoAlumno = new Alumno
+            Persona nuevoPersona = new Persona
             {
                 Nombre = nombre_value.Text.Trim(),
                 Apellido = apellido_value.Text.Trim(),
@@ -69,16 +69,16 @@ namespace Proyecto_Club_Deportivo
                 TipoDocumento = tipoDocu.SelectedItem?.ToString()
             };
 
-            // Se busca si el alumno ya existe
-            if (AlumnoYaRegistrado(nuevoAlumno.TipoDocumento, nuevoAlumno.DNI))
+            // Se busca si la persona ya se encuentra registrada
+            if (AlumnoYaRegistrado(nuevoPersona.TipoDocumento, nuevoPersona.DNI))
             {
-                MessageBox.Show("El alumno ya se encuentra registrado en la base de datos.",
+                MessageBox.Show("La persona ya se encuentra registrado en la base de datos.",
                     "Registro duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             // Si no existe, redirige al Form5
-            Form5 opcionesForm = new Form5(nuevoAlumno, connectionString);
+            Form5 opcionesForm = new Form5(nuevoPersona, connectionString);
             opcionesForm.Show();
             this.Hide();
         }
@@ -145,7 +145,7 @@ namespace Proyecto_Club_Deportivo
     }
 
     // Clase Alumno para enviar los datos al siguiente formulario
-    public class Alumno
+    public class Persona
     {
         public string Nombre { get; set; }
         public string Apellido { get; set; }

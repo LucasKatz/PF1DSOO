@@ -45,7 +45,8 @@ namespace Proyecto_Club_Deportivo
 
         private void listarDeudores_Click(object sender, EventArgs e)
         {
-
+            Form7 form = new Form7();
+            form.ShowDialog();
         }
 
         //Boton de salida de aplicación

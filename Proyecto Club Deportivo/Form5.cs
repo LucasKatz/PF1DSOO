@@ -6,14 +6,14 @@ namespace Proyecto_Club_Deportivo
 {
     public partial class Form5 : Form
     {
-        private Alumno alumno;
+        private Persona persona;
         private string connectionString;
 
         // Constructor recibe el alumno (datos) y la cadena de conexión
-        public Form5(Alumno alumno, string connectionString)
+        public Form5(Persona persona, string connectionString)
         {
             InitializeComponent();
-            this.alumno = alumno ?? throw new ArgumentNullException(nameof(alumno));
+            this.persona = persona ?? throw new ArgumentNullException(nameof(persona));
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
@@ -51,20 +51,20 @@ VALUES
 
                             using (MySqlCommand cmd = new MySqlCommand(insertUsuario, conn, tran))
                             {
-                                cmd.Parameters.AddWithValue("@nombre", alumno.Nombre ?? (object)DBNull.Value);
-                                cmd.Parameters.AddWithValue("@apellido", alumno.Apellido ?? (object)DBNull.Value);
-                                cmd.Parameters.AddWithValue("@tipo_documento", alumno.TipoDocumento ?? "DNI");
-                                cmd.Parameters.AddWithValue("@dni", alumno.DNI ?? (object)DBNull.Value);
-                                cmd.Parameters.AddWithValue("@telefono", alumno.Telefono ?? (object)DBNull.Value);
-                                cmd.Parameters.AddWithValue("@email", alumno.Email ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@nombre", persona.Nombre ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@apellido", persona.Apellido ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@tipo_documento", persona.TipoDocumento ?? "DNI");
+                                cmd.Parameters.AddWithValue("@dni", persona.DNI ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@telefono", persona.Telefono ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@email", persona.Email ?? (object)DBNull.Value);
 
-                                if (DateTime.TryParse(alumno.Nacimiento, out DateTime fechaNacimiento))
+                                if (DateTime.TryParse(persona.Nacimiento, out DateTime fechaNacimiento))
                                     cmd.Parameters.AddWithValue("@nacimiento", fechaNacimiento);
                                 else
                                     cmd.Parameters.AddWithValue("@nacimiento", DBNull.Value);
 
-                                cmd.Parameters.AddWithValue("@apto", alumno.Apto ?? "NO");
-                                cmd.Parameters.AddWithValue("@genero", alumno.Genero ?? "X");
+                                cmd.Parameters.AddWithValue("@apto", persona.Apto ?? "NO");
+                                cmd.Parameters.AddWithValue("@genero", persona.Genero ?? "X");
 
                                 cmd.ExecuteNonQuery();
                             }

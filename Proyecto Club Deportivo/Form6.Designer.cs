@@ -46,6 +46,7 @@
             txtUserID = new TextBox();
             button1 = new Button();
             button2 = new Button();
+            carnet = new Button();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -203,11 +204,22 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
+            // carnet
+            // 
+            carnet.Location = new Point(601, 517);
+            carnet.Name = "carnet";
+            carnet.Size = new Size(190, 29);
+            carnet.TabIndex = 18;
+            carnet.Text = "Generar Carnet";
+            carnet.UseVisualStyleBackColor = true;
+            carnet.Click += carnet_Click;
+            // 
             // registroCuota
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1359, 698);
+            Controls.Add(carnet);
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(txtUserID);
@@ -253,5 +265,6 @@
         private TextBox txtUserID;
         private Button button1;
         private Button button2;
+        private Button carnet;
     }
 }

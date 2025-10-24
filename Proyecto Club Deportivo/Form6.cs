@@ -1,17 +1,19 @@
-﻿using MySql.Data.MySqlClient;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using MySql.Data.MySqlClient;
 using System;
 using System.Configuration;
 using System.Data;
-using System.Windows.Forms;
-using iTextSharp.text;
 using System.Drawing;
-using iTextSharp.text.pdf;
 using System.IO;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Proyecto_Club_Deportivo
 {
     public partial class registroCuota : Form
+
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["ConexionBD"].ConnectionString;
 
@@ -92,7 +94,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // 📌 Buscar usuario en la base de datos
+
         // 📌 Buscar usuario en la base de datos
         private void buscar_Click(object sender, EventArgs e)
         {
@@ -165,15 +167,15 @@ namespace Proyecto_Club_Deportivo
             dt.Columns.Add("nombre", typeof(string));
             dt.Columns.Add("precio", typeof(decimal));
 
-            // Supongamos que la cuota mensual cuesta 5000 (puedes reemplazarlo con un valor real)
-            dt.Rows.Add(0, "Cuota mensual", 5000);
+
+            dt.Rows.Add(11, "Cuota mensual", 12000);
 
             comboActividad.DataSource = dt;
             comboActividad.DisplayMember = "nombre";
             comboActividad.ValueMember = "id";
             comboActividad.SelectedIndex = 0;
 
-            txtPrecio.Text = "5000"; // Muestra precio predeterminado
+            txtPrecio.Text = "12000"; // Muestra precio predeterminado
         }
 
         // 📌 Limpiar campos del formulario (opcional)
@@ -325,8 +327,12 @@ namespace Proyecto_Club_Deportivo
                 tabla.AddCell(concepto);
                 tabla.AddCell("Fecha de pago:");
                 tabla.AddCell(fechaPago.ToString("dd/MM/yyyy"));
-                tabla.AddCell("Vencimiento:");
-                tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
+                // ✅ Solo agregar "Vencimiento" si el concepto NO es "Cuota"
+                if (!concepto.Equals("Cuota", StringComparison.OrdinalIgnoreCase))
+                {
+                    tabla.AddCell("Vencimiento:");
+                    tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
+                }
 
                 doc.Add(tabla);
 
@@ -349,6 +355,80 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
+        private void GenerarCarnetPDF(string nombre, string apellido, string numeroSocio, DateTime fechaAlta)
+        {
+            try
+            {
+                // 📂 Carpeta de destino: Escritorio\Carnets
+                string carpetaCarnets = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    "Carnets"
+                );
 
+                // Crear carpeta si no existe
+                if (!Directory.Exists(carpetaCarnets))
+                    Directory.CreateDirectory(carpetaCarnets);
+
+                // 🧾 Nombre del archivo (con fecha y hora)
+                string nombreArchivo = $"Carnet_{nombre}_{apellido}_{fechaAlta:yyyyMMdd_HHmmss}.pdf";
+                string rutaArchivo = Path.Combine(carpetaCarnets, nombreArchivo);
+
+                // 📄 Crear el documento PDF
+                Document doc = new Document(PageSize.A4, 40, 40, 40, 40);
+                PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
+                doc.Open();
+
+                // 🏷️ Título centrado
+                Paragraph titulo = new Paragraph("Carnet de Socio",
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD));
+                titulo.Alignment = Element.ALIGN_CENTER;
+                doc.Add(titulo);
+                doc.Add(new Paragraph(" "));
+                doc.Add(new Paragraph(" "));
+
+                // 📋 Tabla con los datos del carnet
+                PdfPTable tabla = new PdfPTable(2);
+                tabla.WidthPercentage = 100;
+
+                tabla.AddCell("Nombre:");
+                tabla.AddCell(nombre);
+                tabla.AddCell("Apellido:");
+                tabla.AddCell(apellido);
+                tabla.AddCell("N° de Socio:");
+                tabla.AddCell(numeroSocio);
+                tabla.AddCell("Fecha de Alta:");
+                tabla.AddCell(fechaAlta.ToString("dd/MM/yyyy"));
+
+                doc.Add(tabla);
+
+                doc.Add(new Paragraph(" "));
+                doc.Add(new Paragraph("Bienvenido al club.",
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
+
+                doc.Close();
+
+                // ✅ Abrir automáticamente el PDF
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+                {
+                    FileName = rutaArchivo,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al generar el PDF: " + ex.Message);
+            }
+        }
+
+        private void carnet_Click(object sender, EventArgs e)
+        {
+            // Supongamos que ya tenés estas variables definidas en tu formulario:
+            string nombre = txtNombre.Text;          // Ejemplo: desde un TextBox
+            string apellido = txtApellido.Text;      // Ejemplo: desde un TextBox
+            string numeroSocio = txtUserID.Text; // Ejemplo: desde un TextBox
+            DateTime fechaAlta = DateTime.Now;       // Podés usar la fecha actual o la fecha de pago
+
+            GenerarCarnetPDF(nombre, apellido, numeroSocio, fechaAlta);
+        }
     }
 }
