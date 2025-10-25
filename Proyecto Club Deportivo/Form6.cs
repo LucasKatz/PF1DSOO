@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using static Proyecto_Club_Deportivo.ingresoForm;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -189,6 +190,63 @@ namespace Proyecto_Club_Deportivo
             txtPrecio.Clear();
         }
 
+
+        private DateTime CalcularProximaClase(MySqlConnection conexion, int actividadId, DateTime fechaActual)
+        {
+            string query = "SELECT horario FROM Actividades WHERE id = @id";
+
+            using (MySqlCommand cmd = new MySqlCommand(query, conexion))
+            {
+                cmd.Parameters.AddWithValue("@id", actividadId);
+                string horario = cmd.ExecuteScalar()?.ToString();
+
+                if (string.IsNullOrEmpty(horario))
+                    throw new Exception("No se encontró el horario de la actividad.");
+
+                // Ejemplo: "Lunes y Miércoles 18:00-19:30"
+                string[] dias = new string[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+
+                // Buscamos cuáles días de la semana están incluidos en el texto del horario
+                List<DayOfWeek> diasClase = new List<DayOfWeek>();
+                foreach (var dia in dias)
+                {
+                    if (horario.Contains(dia, StringComparison.OrdinalIgnoreCase))
+                    {
+                        diasClase.Add(ConvertirDia(dia));
+                    }
+                }
+
+                if (diasClase.Count == 0)
+                    throw new Exception("No se pudieron identificar días válidos en el horario.");
+
+                // Calcular el próximo día de clase
+                DateTime proximaClase = fechaActual.Date;
+                while (true)
+                {
+                    proximaClase = proximaClase.AddDays(1);
+                    if (diasClase.Contains(proximaClase.DayOfWeek))
+                        return proximaClase;
+                }
+            }
+        }
+
+        private DayOfWeek ConvertirDia(string dia)
+        {
+            return dia.ToLower() switch
+            {
+                "lunes" => DayOfWeek.Monday,
+                "martes" => DayOfWeek.Tuesday,
+                "miércoles" or "miercoles" => DayOfWeek.Wednesday,
+                "jueves" => DayOfWeek.Thursday,
+                "viernes" => DayOfWeek.Friday,
+                "sábado" or "sabado" => DayOfWeek.Saturday,
+                "domingo" => DayOfWeek.Sunday,
+                _ => throw new ArgumentException($"Día inválido: {dia}")
+            };
+        }
+
+
+
         // 📌 Registrar el pago en la base de datos
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
         {
@@ -213,7 +271,7 @@ namespace Proyecto_Club_Deportivo
             int usuarioId = Convert.ToInt32(txtUserID.Text);
             int actividadId = Convert.ToInt32(comboActividad.SelectedValue);
             DateTime fechaPago = DateTime.Now;
-            DateTime fechaVencimiento = fechaPago.AddMonths(1); // Ejemplo: vence en 1 mes
+            DateTime fechaVencimiento;
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
             {
@@ -221,6 +279,19 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
+                    // ⚙️ Calcular fecha de vencimiento
+                    if (comboActividad.Text.ToUpper().Contains("CUOTA"))
+                    {
+                        // Caso 1: Cuota mensual → vence en 1 mes
+                        fechaVencimiento = fechaPago.AddMonths(1);
+                    }
+                    else
+                    {
+                        // Caso 2: Actividad normal → buscar próximo día de clase
+                        fechaVencimiento = CalcularProximaClase(conexion, actividadId, fechaPago);
+                    }
+
+                    // 📥 Registrar el pago
                     string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago)
                                    VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago);";
 
@@ -233,7 +304,7 @@ namespace Proyecto_Club_Deportivo
                         cmd.ExecuteNonQuery();
                     }
 
-                    // ✅ Después del registro, generar el PDF
+                    // 🧾 Generar comprobante PDF
                     GenerarComprobantePDF(
                         txtNombre.Text,
                         txtApellido.Text,
