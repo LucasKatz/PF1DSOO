@@ -69,14 +69,23 @@ namespace Proyecto_Club_Deportivo
         }
 
 
-        //Boton de Login
+        //Botón de Login
         private void botonIngresar_Click(object sender, EventArgs e)
         {
-            string usuario = textUsuario.Text;
-            string password = textPassword.Text;
+            string usuario = textUsuario.Text.Trim();
+            string password = textPassword.Text.Trim();
 
+            // Validación de campos vacíos
+            if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Por favor, complete todos los campos antes de continuar.",
+                                "Campos incompletos",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return; 
+            }
 
-            //Credenciales en app.Config por cuestiones de seguridad
+            // Credenciales en app.Config por cuestiones de seguridad
             string adminUser = ConfigurationManager.AppSettings["AdminUser"];
             string adminPassword = ConfigurationManager.AppSettings["AdminPassword"];
 
@@ -89,7 +98,7 @@ namespace Proyecto_Club_Deportivo
             else
             {
                 MessageBox.Show("Credenciales incorrectas", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

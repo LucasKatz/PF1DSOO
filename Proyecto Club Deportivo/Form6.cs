@@ -10,11 +10,9 @@ using System.Windows.Forms;
 using static Proyecto_Club_Deportivo.ingresoForm;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-
 namespace Proyecto_Club_Deportivo
 {
     public partial class registroCuota : Form
-
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["ConexionBD"].ConnectionString;
 
@@ -29,6 +27,11 @@ namespace Proyecto_Club_Deportivo
             tipoDocu.Items.Add("PASAPORTE");
             tipoDocu.SelectedIndex = 0;
             tipoDocu.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            // 🔹 Inicializar valores
+            txtPrecio.Text = "0.00";
+            comboActividad.Enabled = false; // Deshabilitado hasta que haya usuario válido
+            carnet.Visible = false;
         }
 
         // 📌 Cargar actividades al abrir el formulario
@@ -44,7 +47,7 @@ namespace Proyecto_Club_Deportivo
                 try
                 {
                     conexion.Open();
-                    // 📌 Excluimos la actividad 'CUOTA' o 'Cuota mensual' según el nombre en la base
+                    // 📌 Excluimos la actividad 'CUOTA' o 'Cuota mensual'
                     string query = "SELECT id, nombre, precio FROM Actividades WHERE UPPER(nombre) <> 'CUOTA' AND UPPER(nombre) <> 'CUOTA MENSUAL'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -66,11 +69,14 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-
         // 📌 Mostrar precio automáticamente al seleccionar una actividad
         private void comboActividad_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboActividad.SelectedValue == null) return;
+            if (comboActividad.SelectedValue == null)
+            {
+                txtPrecio.Text = "0.00"; // 🧾 Si no hay actividad seleccionada, el precio es 0
+                return;
+            }
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
             {
@@ -86,6 +92,8 @@ namespace Proyecto_Club_Deportivo
 
                         if (result != null)
                             txtPrecio.Text = Convert.ToDecimal(result).ToString("0.00");
+                        else
+                            txtPrecio.Text = "0.00";
                     }
                 }
                 catch (Exception ex)
@@ -95,16 +103,20 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-
         // 📌 Buscar usuario en la base de datos
         private void buscar_Click(object sender, EventArgs e)
         {
-            string tipo = tipoDocu.SelectedItem.ToString();
+            // Obtener tipo y número de documento
+            string tipo = tipoDocu.SelectedItem != null ? tipoDocu.SelectedItem.ToString() : "";
             string numero = docuValue.Text.Trim();
 
-            if (string.IsNullOrEmpty(numero))
+            // 🟡 Validación de campos vacíos
+            if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(numero))
             {
-                MessageBox.Show("Por favor ingrese el número de documento.");
+                MessageBox.Show("Por favor, seleccione el tipo de documento e ingrese el número antes de buscar.",
+                                "Campos incompletos",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
                 return;
             }
 
@@ -115,10 +127,10 @@ namespace Proyecto_Club_Deportivo
                     conexion.Open();
 
                     string query = @"SELECT u.id, u.nombre, u.apellido,
-                                    CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
-                             FROM usuariosRegistrados u
-                             LEFT JOIN Socios s ON u.id = s.usuario_id
-                             WHERE u.tipo_documento = @tipo AND u.dni = @dni;";
+                            CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
+                            FROM usuariosRegistrados u
+                            LEFT JOIN Socios s ON u.id = s.usuario_id
+                            WHERE u.tipo_documento = @tipo AND u.dni = @dni;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     {
@@ -129,35 +141,64 @@ namespace Proyecto_Club_Deportivo
                         {
                             if (reader.Read())
                             {
+                                // 🔹 Cargar datos en los campos
                                 txtNombre.Text = reader["nombre"].ToString();
                                 txtApellido.Text = reader["apellido"].ToString();
                                 txtSocio.Text = reader["socio"].ToString();
                                 txtUserID.Text = reader["id"].ToString();
 
-                                // 📌 Ahora aplicamos el filtro según si es socio o no
-                                if (reader["socio"].ToString() == "SI")
+                                // 🔒 Bloquear campos
+                                txtNombre.ReadOnly = true;
+                                txtApellido.ReadOnly = true;
+                                txtSocio.ReadOnly = true;
+                                txtUserID.ReadOnly = true;
+
+                                comboActividad.Enabled = true;
+
+                                // 📌 Mostrar u ocultar botón de carnet según si es socio
+                                if (reader["socio"].ToString().Trim().ToUpper() == "SI")
                                 {
-                                    CargarSoloCuota(); // Muestra solo "Cuota mensual"
+                                    CargarSoloCuota();
+                                    carnet.Visible = true;
                                 }
                                 else
                                 {
-                                    CargarActividades(); // Muestra todas las actividades
+                                    CargarActividades();
+                                    carnet.Visible = false;
                                 }
                             }
                             else
                             {
-                                MessageBox.Show("No se encontró ninguna persona con esos datos.");
-                                LimpiarCampos();
+                                // 🚫 No se encontró ningún usuario
+                                MessageBox.Show("No se encontró ninguna persona registrada con los datos ingresados.",
+                                                "Usuario no registrado",
+                                                MessageBoxButtons.OK,
+                                                MessageBoxIcon.Information);
+
+                                // 🔹 Limpiar campos y bloquear controles
+                                txtNombre.Clear();
+                                txtApellido.Clear();
+                                txtSocio.Clear();
+                                txtUserID.Clear();
+                                comboActividad.Enabled = false;
+                                carnet.Visible = false;
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error al buscar la persona: " + ex.Message);
+                    MessageBox.Show("Error al buscar el usuario: " + ex.Message,
+                                    "Error de conexión",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
                 }
             }
         }
+
+    
+
+      
 
         // 📌 Cargar solo la opción "Cuota mensual"
         private void CargarSoloCuota()
@@ -168,7 +209,6 @@ namespace Proyecto_Club_Deportivo
             dt.Columns.Add("nombre", typeof(string));
             dt.Columns.Add("precio", typeof(decimal));
 
-
             dt.Rows.Add(11, "Cuota mensual", 12000);
 
             comboActividad.DataSource = dt;
@@ -176,21 +216,10 @@ namespace Proyecto_Club_Deportivo
             comboActividad.ValueMember = "id";
             comboActividad.SelectedIndex = 0;
 
-            txtPrecio.Text = "12000"; // Muestra precio predeterminado
+            txtPrecio.Text = "12000";
         }
 
-        // 📌 Limpiar campos del formulario (opcional)
-        private void LimpiarCampos()
-        {
-            txtNombre.Clear();
-            txtApellido.Clear();
-            txtSocio.Clear();
-            txtUserID.Clear();
-            comboActividad.DataSource = null;
-            txtPrecio.Clear();
-        }
-
-
+       
         private DateTime CalcularProximaClase(MySqlConnection conexion, int actividadId, DateTime fechaActual)
         {
             string query = "SELECT horario FROM Actividades WHERE id = @id";
@@ -203,10 +232,8 @@ namespace Proyecto_Club_Deportivo
                 if (string.IsNullOrEmpty(horario))
                     throw new Exception("No se encontró el horario de la actividad.");
 
-                // Ejemplo: "Lunes y Miércoles 18:00-19:30"
                 string[] dias = new string[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
 
-                // Buscamos cuáles días de la semana están incluidos en el texto del horario
                 List<DayOfWeek> diasClase = new List<DayOfWeek>();
                 foreach (var dia in dias)
                 {
@@ -219,7 +246,6 @@ namespace Proyecto_Club_Deportivo
                 if (diasClase.Count == 0)
                     throw new Exception("No se pudieron identificar días válidos en el horario.");
 
-                // Calcular el próximo día de clase
                 DateTime proximaClase = fechaActual.Date;
                 while (true)
                 {
@@ -245,9 +271,7 @@ namespace Proyecto_Club_Deportivo
             };
         }
 
-
-
-        // 📌 Registrar el pago en la base de datos
+        // 📌 Registrar el pago
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtUserID.Text))
@@ -279,21 +303,13 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
-                    // ⚙️ Calcular fecha de vencimiento
                     if (comboActividad.Text.ToUpper().Contains("CUOTA"))
-                    {
-                        // Caso 1: Cuota mensual → vence en 1 mes
                         fechaVencimiento = fechaPago.AddMonths(1);
-                    }
                     else
-                    {
-                        // Caso 2: Actividad normal → buscar próximo día de clase
                         fechaVencimiento = CalcularProximaClase(conexion, actividadId, fechaPago);
-                    }
 
-                    // 📥 Registrar el pago
                     string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago)
-                                   VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago);";
+                                           VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago);";
 
                     using (MySqlCommand cmd = new MySqlCommand(insertQuery, conexion))
                     {
@@ -304,7 +320,6 @@ namespace Proyecto_Club_Deportivo
                         cmd.ExecuteNonQuery();
                     }
 
-                    // 🧾 Generar comprobante PDF
                     GenerarComprobantePDF(
                         txtNombre.Text,
                         txtApellido.Text,
@@ -332,49 +347,40 @@ namespace Proyecto_Club_Deportivo
 
         private void button2_Click(object sender, EventArgs e)
         {
-            this.Close(); // Cierra el form actual
+            this.Close();
 
-            // Busca si formPrincipal sigue abierto en memoria
             formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
-
             if (principal != null)
             {
                 principal.Show();
             }
             else
             {
-                // Si por alguna razón no estaba abierto, lo crea de nuevo
                 principal = new formPrincipal();
                 principal.Show();
             }
         }
-
 
         private void GenerarComprobantePDF(string nombre, string apellido, string tipoDoc, string numeroDoc,
                                      string monto, string concepto, DateTime fechaPago, DateTime fechaVencimiento)
         {
             try
             {
-                // 📂 Carpeta de destino: Escritorio\Comprobantes
                 string carpetaComprobantes = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                     "Comprobantes"
                 );
 
-                // Crear carpeta si no existe
                 if (!Directory.Exists(carpetaComprobantes))
                     Directory.CreateDirectory(carpetaComprobantes);
 
-                // 🧾 Nombre del archivo (con fecha y hora)
                 string nombreArchivo = $"Comprobante_{nombre}_{apellido}_{fechaPago:yyyyMMdd_HHmmss}.pdf";
                 string rutaArchivo = Path.Combine(carpetaComprobantes, nombreArchivo);
 
-                // 📄 Crear el documento PDF
                 Document doc = new Document(PageSize.A4, 40, 40, 40, 40);
                 PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
                 doc.Open();
 
-                // 🏷️ Título centrado
                 Paragraph titulo = new Paragraph("Comprobante de Pago",
                     new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD));
                 titulo.Alignment = Element.ALIGN_CENTER;
@@ -382,7 +388,6 @@ namespace Proyecto_Club_Deportivo
                 doc.Add(new Paragraph(" "));
                 doc.Add(new Paragraph(" "));
 
-                // 📋 Tabla con los datos del pago
                 PdfPTable tabla = new PdfPTable(2);
                 tabla.WidthPercentage = 100;
 
@@ -398,7 +403,6 @@ namespace Proyecto_Club_Deportivo
                 tabla.AddCell(concepto);
                 tabla.AddCell("Fecha de pago:");
                 tabla.AddCell(fechaPago.ToString("dd/MM/yyyy"));
-                // ✅ Solo agregar "Vencimiento" si el concepto NO es "Cuota"
                 if (!concepto.Equals("Cuota", StringComparison.OrdinalIgnoreCase))
                 {
                     tabla.AddCell("Vencimiento:");
@@ -406,14 +410,12 @@ namespace Proyecto_Club_Deportivo
                 }
 
                 doc.Add(tabla);
-
                 doc.Add(new Paragraph(" "));
                 doc.Add(new Paragraph("Gracias por su pago.",
                     new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
 
                 doc.Close();
 
-                // ✅ Abrir automáticamente el PDF
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
                     FileName = rutaArchivo,
@@ -430,26 +432,21 @@ namespace Proyecto_Club_Deportivo
         {
             try
             {
-                // 📂 Carpeta de destino: Escritorio\Carnets
                 string carpetaCarnets = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                     "Carnets"
                 );
 
-                // Crear carpeta si no existe
                 if (!Directory.Exists(carpetaCarnets))
                     Directory.CreateDirectory(carpetaCarnets);
 
-                // 🧾 Nombre del archivo (con fecha y hora)
                 string nombreArchivo = $"Carnet_{nombre}_{apellido}_{fechaAlta:yyyyMMdd_HHmmss}.pdf";
                 string rutaArchivo = Path.Combine(carpetaCarnets, nombreArchivo);
 
-                // 📄 Crear el documento PDF
                 Document doc = new Document(PageSize.A4, 40, 40, 40, 40);
                 PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
                 doc.Open();
 
-                // 🏷️ Título centrado
                 Paragraph titulo = new Paragraph("Carnet de Socio",
                     new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD));
                 titulo.Alignment = Element.ALIGN_CENTER;
@@ -457,7 +454,6 @@ namespace Proyecto_Club_Deportivo
                 doc.Add(new Paragraph(" "));
                 doc.Add(new Paragraph(" "));
 
-                // 📋 Tabla con los datos del carnet
                 PdfPTable tabla = new PdfPTable(2);
                 tabla.WidthPercentage = 100;
 
@@ -471,15 +467,12 @@ namespace Proyecto_Club_Deportivo
                 tabla.AddCell(fechaAlta.ToString("dd/MM/yyyy"));
 
                 doc.Add(tabla);
-
                 doc.Add(new Paragraph(" "));
                 doc.Add(new Paragraph("Bienvenido al club.",
                     new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
 
                 doc.Close();
 
-
-                // ✅ Abrir automáticamente el PDF
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
                     FileName = rutaArchivo,
@@ -494,11 +487,10 @@ namespace Proyecto_Club_Deportivo
 
         private void carnet_Click(object sender, EventArgs e)
         {
-            // Supongamos que ya tenés estas variables definidas en tu formulario:
-            string nombre = txtNombre.Text;          // Ejemplo: desde un TextBox
-            string apellido = txtApellido.Text;      // Ejemplo: desde un TextBox
-            string numeroSocio = txtUserID.Text; // Ejemplo: desde un TextBox
-            DateTime fechaAlta = DateTime.Now;       // Podés usar la fecha actual o la fecha de pago
+            string nombre = txtNombre.Text;
+            string apellido = txtApellido.Text;
+            string numeroSocio = txtUserID.Text;
+            DateTime fechaAlta = DateTime.Now;
 
             GenerarCarnetPDF(nombre, apellido, numeroSocio, fechaAlta);
         }

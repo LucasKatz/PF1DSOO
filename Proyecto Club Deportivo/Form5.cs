@@ -104,7 +104,7 @@ VALUES
                         catch (Exception exInner)
                         {
                             // Si algo falla, revertimos la transacción
-                            try { tran.Rollback(); } catch { /* ignorar rollback errors */ }
+                            try { tran.Rollback(); } catch { }
 
                             MessageBox.Show("Error al completar el registro: " + exInner.Message,
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
