@@ -72,7 +72,7 @@ namespace Proyecto_Club_Deportivo
             // Se busca si la persona ya se encuentra registrada
             if (AlumnoYaRegistrado(nuevoPersona.TipoDocumento, nuevoPersona.DNI))
             {
-                MessageBox.Show("La persona ya se encuentra registrado en la base de datos.",
+                MessageBox.Show("La persona ya se encuentra registrada en la base de datos.",
                     "Registro duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }

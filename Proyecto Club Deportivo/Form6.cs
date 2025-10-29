@@ -146,7 +146,7 @@ namespace Proyecto_Club_Deportivo
                             }
                             else
                             {
-                                MessageBox.Show("No se encontró ningún usuario con esos datos.");
+                                MessageBox.Show("No se encontró ninguna persona con esos datos.");
                                 LimpiarCampos();
                             }
                         }
@@ -154,7 +154,7 @@ namespace Proyecto_Club_Deportivo
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error al buscar el usuario: " + ex.Message);
+                    MessageBox.Show("Error al buscar la persona: " + ex.Message);
                 }
             }
         }
@@ -252,7 +252,7 @@ namespace Proyecto_Club_Deportivo
         {
             if (string.IsNullOrEmpty(txtUserID.Text))
             {
-                MessageBox.Show("Debe buscar un usuario antes de registrar un pago.");
+                MessageBox.Show("Debe buscar una persona antes de registrar un pago.");
                 return;
             }
 
@@ -477,6 +477,7 @@ namespace Proyecto_Club_Deportivo
                     new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
 
                 doc.Close();
+
 
                 // ✅ Abrir automáticamente el PDF
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
