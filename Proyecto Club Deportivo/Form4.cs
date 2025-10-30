@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Configuration;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Proyecto_Club_Deportivo
@@ -13,6 +14,7 @@ namespace Proyecto_Club_Deportivo
         public Form4()
         {
             InitializeComponent();
+
 
             // Configurar ComboBox Apto Médico
             apto_value.Items.Add("SI");
@@ -55,7 +57,31 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            // Se crea un objeto con los valores del Alumno
+            // ✅ VALIDACIÓN 1: Teléfono con 10 dígitos
+            if (!Regex.IsMatch(tel_value.Text.Trim(), @"^\d{10}$"))
+            {
+                MessageBox.Show("El número de teléfono debe contener exactamente 10 dígitos.",
+                    "Teléfono inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ✅ VALIDACIÓN 2: Formato de email válido
+            if (!Regex.IsMatch(email_value.Text.Trim(), @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                MessageBox.Show("Por favor, ingresá una dirección de correo válida (por ejemplo: usuario@dominio.com).",
+                    "Correo inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ✅ VALIDACIÓN 3: Fecha de nacimiento con formato xx/xx/xxxx
+            if (!Regex.IsMatch(nacimiento_value.Text.Trim(), @"^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$"))
+            {
+                MessageBox.Show("La fecha de nacimiento debe tener el formato DD/MM/AAAA (por ejemplo: 25/10/1990).",
+                    "Fecha inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Si todas las validaciones pasan, se crea el objeto Persona
             Persona nuevoPersona = new Persona
             {
                 Nombre = nombre_value.Text.Trim(),
@@ -102,7 +128,8 @@ namespace Proyecto_Club_Deportivo
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al verificar el alumno: " + ex.Message);
+                        MessageBox.Show("Error al verificar el alumno: " + ex.Message,
+                            "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
                 }
@@ -141,10 +168,9 @@ namespace Proyecto_Club_Deportivo
                 principal.Show();
             }
         }
-
     }
 
-    // Clase Alumno para enviar los datos al siguiente formulario
+    // Clase Persona para enviar los datos al siguiente formulario
     public class Persona
     {
         public string Nombre { get; set; }
@@ -158,4 +184,3 @@ namespace Proyecto_Club_Deportivo
         public string TipoDocumento { get; set; }
     }
 }
-
