@@ -60,7 +60,7 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
-                    string query = @"SELECT  nombre, rango_min, rango_max, cupoTotal, cupoDisponible, horario, precio 
+                    string query = @"SELECT  nombre, rango_min, rango_max, horario, precio 
                                      FROM Actividades;";
                     MySqlDataAdapter adapter = new MySqlDataAdapter(query, conexion);
                     DataTable dt = new DataTable();
