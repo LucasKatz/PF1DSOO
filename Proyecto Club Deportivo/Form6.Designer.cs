@@ -47,6 +47,10 @@
             button1 = new Button();
             button2 = new Button();
             carnet = new Button();
+            metodo = new Label();
+            metodoPago = new ComboBox();
+            comboCuotas = new ComboBox();
+            cuotas = new Label();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -168,7 +172,7 @@
             // 
             // btnRegistrarPago
             // 
-            btnRegistrarPago.Location = new Point(601, 462);
+            btnRegistrarPago.Location = new Point(601, 509);
             btnRegistrarPago.Name = "btnRegistrarPago";
             btnRegistrarPago.Size = new Size(190, 29);
             btnRegistrarPago.TabIndex = 14;
@@ -206,7 +210,7 @@
             // 
             // carnet
             // 
-            carnet.Location = new Point(601, 517);
+            carnet.Location = new Point(601, 564);
             carnet.Name = "carnet";
             carnet.Size = new Size(190, 29);
             carnet.TabIndex = 18;
@@ -214,11 +218,51 @@
             carnet.UseVisualStyleBackColor = true;
             carnet.Click += carnet_Click;
             // 
+            // metodo
+            // 
+            metodo.AutoSize = true;
+            metodo.Location = new Point(717, 348);
+            metodo.Name = "metodo";
+            metodo.Size = new Size(120, 20);
+            metodo.TabIndex = 19;
+            metodo.Text = "Método de Pago";
+            // 
+            // metodoPago
+            // 
+            metodoPago.FormattingEnabled = true;
+            metodoPago.Location = new Point(888, 348);
+            metodoPago.Name = "metodoPago";
+            metodoPago.Size = new Size(151, 28);
+            metodoPago.TabIndex = 20;
+            metodoPago.SelectedIndexChanged += metodoPago_SelectedIndexChanged;
+            // 
+            // comboCuotas
+            // 
+            comboCuotas.FormattingEnabled = true;
+            comboCuotas.Items.AddRange(new object[] { "1 3 6" });
+            comboCuotas.Location = new Point(888, 400);
+            comboCuotas.Name = "comboCuotas";
+            comboCuotas.Size = new Size(151, 28);
+            comboCuotas.TabIndex = 21;
+            // 
+            // cuotas
+            // 
+            cuotas.AutoSize = true;
+            cuotas.Location = new Point(717, 403);
+            cuotas.Name = "cuotas";
+            cuotas.Size = new Size(54, 20);
+            cuotas.TabIndex = 22;
+            cuotas.Text = "Cuotas";
+            // 
             // registroCuota
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1359, 698);
+            Controls.Add(cuotas);
+            Controls.Add(comboCuotas);
+            Controls.Add(metodoPago);
+            Controls.Add(metodo);
             Controls.Add(carnet);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -266,5 +310,9 @@
         private Button button1;
         private Button button2;
         private Button carnet;
+        private Label metodo;
+        private ComboBox metodoPago;
+        private ComboBox comboCuotas;
+        private Label cuotas;
     }
 }
