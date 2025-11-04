@@ -56,6 +56,7 @@
             // TipoDocuRegistroPago
             // 
             TipoDocuRegistroPago.AutoSize = true;
+            TipoDocuRegistroPago.ForeColor = SystemColors.ButtonHighlight;
             TipoDocuRegistroPago.Location = new Point(229, 106);
             TipoDocuRegistroPago.Name = "TipoDocuRegistroPago";
             TipoDocuRegistroPago.Size = new Size(39, 20);
@@ -90,6 +91,7 @@
             // Nombre
             // 
             Nombre.AutoSize = true;
+            Nombre.ForeColor = SystemColors.ButtonHighlight;
             Nombre.Location = new Point(230, 165);
             Nombre.Name = "Nombre";
             Nombre.Size = new Size(64, 20);
@@ -99,6 +101,7 @@
             // Apellido
             // 
             Apellido.AutoSize = true;
+            Apellido.ForeColor = SystemColors.ButtonHighlight;
             Apellido.Location = new Point(228, 220);
             Apellido.Name = "Apellido";
             Apellido.Size = new Size(66, 20);
@@ -108,6 +111,7 @@
             // Socio
             // 
             Socio.AutoSize = true;
+            Socio.ForeColor = SystemColors.ButtonHighlight;
             Socio.Location = new Point(230, 278);
             Socio.Name = "Socio";
             Socio.Size = new Size(46, 20);
@@ -138,6 +142,7 @@
             // concepto
             // 
             concepto.AutoSize = true;
+            concepto.ForeColor = SystemColors.ButtonHighlight;
             concepto.Location = new Point(229, 341);
             concepto.Name = "concepto";
             concepto.Size = new Size(126, 20);
@@ -156,6 +161,7 @@
             // precio
             // 
             precio.AutoSize = true;
+            precio.ForeColor = SystemColors.ButtonHighlight;
             precio.Location = new Point(230, 403);
             precio.Name = "precio";
             precio.Size = new Size(50, 20);
@@ -221,6 +227,7 @@
             // metodo
             // 
             metodo.AutoSize = true;
+            metodo.ForeColor = SystemColors.ButtonHighlight;
             metodo.Location = new Point(717, 348);
             metodo.Name = "metodo";
             metodo.Size = new Size(120, 20);
@@ -248,6 +255,7 @@
             // cuotas
             // 
             cuotas.AutoSize = true;
+            cuotas.ForeColor = SystemColors.ButtonHighlight;
             cuotas.Location = new Point(717, 403);
             cuotas.Name = "cuotas";
             cuotas.Size = new Size(54, 20);
@@ -258,6 +266,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1359, 698);
             Controls.Add(cuotas);
             Controls.Add(comboCuotas);

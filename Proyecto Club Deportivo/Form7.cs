@@ -56,6 +56,25 @@ WHERE DATE(p.fecha_vencimiento) = CURDATE();
             }
         }
 
+        private void volver_Click(object sender, EventArgs e)
+        {
+            this.Close();
 
+            formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
+            if (principal != null)
+            {
+                principal.Show();
+            }
+            else
+            {
+                principal = new formPrincipal();
+                principal.Show();
+            }
+        }
+
+        private void salir_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }

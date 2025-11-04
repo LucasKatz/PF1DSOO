@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             dgvActividades = new DataGridView();
+            volver = new Button();
+            salir = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvActividades).BeginInit();
             SuspendLayout();
             // 
@@ -40,13 +42,34 @@
             dgvActividades.RowHeadersWidth = 51;
             dgvActividades.Size = new Size(801, 381);
             dgvActividades.TabIndex = 1;
-            //dgvActividades.CellContentClick += dgvActividades_CellContentClick;
+            // 
+            // volver
+            // 
+            volver.Location = new Point(541, 403);
+            volver.Name = "volver";
+            volver.Size = new Size(94, 29);
+            volver.TabIndex = 2;
+            volver.Text = "Volver";
+            volver.UseVisualStyleBackColor = true;
+            volver.Click += volver_Click;
+            // 
+            // salir
+            // 
+            salir.Location = new Point(673, 403);
+            salir.Name = "salir";
+            salir.Size = new Size(94, 29);
+            salir.TabIndex = 3;
+            salir.Text = "Salir";
+            salir.UseVisualStyleBackColor = true;
+            salir.Click += salir_Click;
             // 
             // Form7
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(salir);
+            Controls.Add(volver);
             Controls.Add(dgvActividades);
             Name = "Form7";
             Text = "Form7";
@@ -57,5 +80,7 @@
         #endregion
 
         private DataGridView dgvActividades;
+        private Button volver;
+        private Button salir;
     }
 }
