@@ -24,7 +24,7 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
-                    // 🗓️ Consulta: usuarios cuyos pagos vencen HOY
+                    // Consulta en base de datos los  usuarios cuyos pagos vencen HOY
                     string query = @"
 SELECT 
     u.id AS UsuarioID,

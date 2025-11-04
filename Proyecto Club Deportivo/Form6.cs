@@ -22,7 +22,7 @@ namespace Proyecto_Club_Deportivo
         {
             InitializeComponent();
 
-            // Documentos
+            // Tipos de documento
             tipoDocu.Items.Add("DNI");
             tipoDocu.Items.Add("LE");
             tipoDocu.Items.Add("LC");
@@ -31,12 +31,12 @@ namespace Proyecto_Club_Deportivo
             tipoDocu.SelectedIndex = 0;
             tipoDocu.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // 🔹 Inicializar valores
+            // Inicializar valores
             txtPrecio.Text = "0.00";
             comboActividad.Enabled = false; // Deshabilitado hasta que haya usuario válido
             carnet.Visible = false;
 
-            // --- POBLAR metodoPago correctamente (no dentro de SelectedIndexChanged) ---
+            // Metodo de Pago
             metodoPago.Items.Clear();
             metodoPago.Items.Add("Efectivo");
             metodoPago.Items.Add("Transferencia");
@@ -44,7 +44,7 @@ namespace Proyecto_Club_Deportivo
             metodoPago.DropDownStyle = ComboBoxStyle.DropDownList;
             metodoPago.SelectedIndex = 0;
 
-            // --- Configurar comboCuotas (oculto por defecto) ---
+            // --- Configurar comboCuotas (se muestra solo si se selecciona TARJETA como metodo de pago) ---
             if (comboCuotas != null)
             {
                 comboCuotas.Items.Clear();
@@ -57,7 +57,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // 📌 Cargar actividades al abrir el formulario
+        // Se cargan las actividades al abrir el formulario
         private void registroCuota_Load(object sender, EventArgs e)
         {
             CargarActividades();
@@ -70,7 +70,7 @@ namespace Proyecto_Club_Deportivo
                 try
                 {
                     conexion.Open();
-                    // 📌 Excluimos la actividad 'CUOTA' o 'Cuota mensual'
+                    // Si NO es socio, se excluye la opción CUOTA de las actividaes
                     string query = "SELECT id, nombre, precio FROM Actividades WHERE UPPER(nombre) <> 'CUOTA' AND UPPER(nombre) <> 'CUOTA MENSUAL'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -92,12 +92,12 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // 📌 Mostrar precio automáticamente al seleccionar una actividad
+        // El precio se muestra automaticamente al seleccionar la actividad, el precio inicial por defecto es 0
         private void comboActividad_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboActividad.SelectedValue == null)
             {
-                txtPrecio.Text = "0.00"; // 🧾 Si no hay actividad seleccionada, el precio es 0
+                txtPrecio.Text = "0.00"; 
                 return;
             }
 
@@ -126,14 +126,14 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // 📌 Buscar usuario en la base de datos
+        // El botón busca el usuario en la base de datos por tipo y N° de documento
         private void buscar_Click(object sender, EventArgs e)
         {
             // Obtener tipo y número de documento
             string tipo = tipoDocu.SelectedItem != null ? tipoDocu.SelectedItem.ToString() : "";
             string numero = docuValue.Text.Trim();
 
-            // 🟡 Validación de campos vacíos
+            // Validación de campos vacíos
             if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(numero))
             {
                 MessageBox.Show("Por favor, seleccione el tipo de documento e ingrese el número antes de buscar.",
@@ -164,13 +164,13 @@ namespace Proyecto_Club_Deportivo
                         {
                             if (reader.Read())
                             {
-                                // 🔹 Cargar datos en los campos
+                                // Se cargan datos en los campos
                                 txtNombre.Text = reader["nombre"].ToString();
                                 txtApellido.Text = reader["apellido"].ToString();
                                 txtSocio.Text = reader["socio"].ToString();
                                 txtUserID.Text = reader["id"].ToString();
 
-                                // 🔒 Bloquear campos
+                                // Se bloquean campos para que no puedan ser modificados manualmente
                                 txtNombre.ReadOnly = true;
                                 txtApellido.ReadOnly = true;
                                 txtSocio.ReadOnly = true;
@@ -178,7 +178,7 @@ namespace Proyecto_Club_Deportivo
 
                                 comboActividad.Enabled = true;
 
-                                // 📌 Mostrar u ocultar botón de carnet según si es socio
+                                // Se muestra o se oculta el botón de carnet según si es socio
                                 if (reader["socio"].ToString().Trim().ToUpper() == "SI")
                                 {
                                     CargarSoloCuota();
@@ -192,7 +192,7 @@ namespace Proyecto_Club_Deportivo
                             }
                             else
                             {
-                                // 🚫 No se encontró ningún usuario
+                                // Aviso de usuario no encontrado
                                 MessageBox.Show("No se encontró ninguna persona registrada con los datos ingresados.",
                                                 "Usuario no registrado",
                                                 MessageBoxButtons.OK,
@@ -219,7 +219,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // 📌 Cargar solo la opción "Cuota mensual"
+        // Se carga  solo la opción "Cuota mensual"
         private void CargarSoloCuota()
         {
             comboActividad.DataSource = null;
@@ -266,14 +266,14 @@ namespace Proyecto_Club_Deportivo
 
                 DateTime proximaClase = fechaActual.Date;
                 // buscamos la próxima fecha que coincida con algún día de la actividad
-                for (int i = 1; i <= 14; i++) // limite 2 semanas para evitar loop infinito
+                for (int i = 1; i <= 14; i++) // la función tiene un limite 2 semanas para evitar loop infinito
                 {
                     proximaClase = proximaClase.AddDays(1);
                     if (diasClase.Contains(proximaClase.DayOfWeek))
                         return proximaClase;
                 }
 
-                // Si no se encontró en 14 días, devolvemos +7 días como fallback
+                // Si no se encuentra en 14 días, devolvemos +7 días como fallback
                 return fechaActual.AddDays(7);
             }
         }
@@ -303,7 +303,7 @@ namespace Proyecto_Club_Deportivo
 
             if (metodo.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase))
             {
-                // Mostrar opciones de cuotas
+                // Se muestra la cantidad de cuotas posibles
                 if (comboCuotas != null)
                 {
                     comboCuotas.Visible = true;
@@ -320,7 +320,7 @@ namespace Proyecto_Club_Deportivo
                 }
             }
 
-            // Si se selecciona Efectivo, recalcular precio en pantalla mostrando descuento
+            // Si se selecciona Efectivo, recalcula precio en pantalla mostrando descuento
             if (decimal.TryParse(txtPrecio.Text, out decimal precioBase))
             {
                 decimal precioMostrado = precioBase;
@@ -328,12 +328,12 @@ namespace Proyecto_Club_Deportivo
                 {
                     precioMostrado = Math.Round(precioBase * 0.90m, 2); // 10% off
                 }
-                // mostrar el precio con dos decimales
+                // Muestra el precio con dos decimales
                 txtPrecio.Text = precioMostrado.ToString("0.00");
             }
         }
 
-        // 📌 Registrar el pago
+        //  Registrar el pago
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtUserID.Text))
@@ -372,7 +372,7 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
 
-                    // ---- 1) Validación: Existe un pago previo y si su vencimiento no pasó -> bloquear
+                    // Validación de pago vigente
                     string lastPagoQuery = @"SELECT fecha_pago FROM Pagos 
                                              WHERE usuario_id = @usuario_id AND actividad_id = @actividad_id
                                              ORDER BY fecha_pago DESC LIMIT 1;";
@@ -394,7 +394,7 @@ namespace Proyecto_Club_Deportivo
                             }
                             else
                             {
-                                // calcular a partir de la última fecha de pago
+                                // Se calcula a partir de la última fecha de pago
                                 proximoVencimiento = CalcularProximaClase(conexion, actividadId, lastPagoDate);
                             }
 
@@ -409,24 +409,21 @@ namespace Proyecto_Club_Deportivo
                         }
                     }
 
-                    // ---- 2) Determinar vencimiento para este pago (para el comprobante)
+                    // 2) Determinar vencimiento para este pago (se incluye en el comprobante)
                     if (comboActividad.Text.ToUpper().Contains("CUOTA"))
                         fechaVencimiento = fechaPago.AddMonths(1);
                     else
                         fechaVencimiento = CalcularProximaClase(conexion, actividadId, fechaPago);
 
-                    // ---- 3) Aplicar descuento si es efectivo (10%)
+                    //  3) Aplicar descuento si es efectivo (10%)
                     decimal montoFinal = precioIngresado;
                     if (metodoSeleccionado.Equals("Efectivo", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Si el txtPrecio ya muestra el precio descontado, aseguramos el descuento:
-                        // Supongamos precioIngresado es el precio mostrado. Si querés aplicar el 10% sobre un precio base
-                        // original (por ej. guardado en la tabla Actividades), deberías recuperar ese base.
-                        // Aquí asumimos que txtPrecio contiene el monto final a guardar.
+                        
                         montoFinal = precioIngresado;
                     }
 
-                    // ---- 4) Insert en la tabla Pagos incluyendo metodo y cuotas
+                    // Se cargan los datos del pago en la BB DD
                     string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, metodo, cuotas)
                                            VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago, @metodo, @cuotas);";
 
@@ -445,7 +442,7 @@ namespace Proyecto_Club_Deportivo
                         cmd.ExecuteNonQuery();
                     }
 
-                    // ---- 5) Generar comprobante incluyendo metodo y cuotas
+                    //  5) Se genera el comprobante incluyendo metodo y cuotas
                     GenerarComprobantePDF(
                         txtNombre.Text,
                         txtApellido.Text,
@@ -489,7 +486,8 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Modificado para incluir metodo y cuotas en el comprobante
+
+        //Función que genera el comprobante de pago en PDF
         private void GenerarComprobantePDF(string nombre, string apellido, string tipoDoc, string numeroDoc,
                                      string monto, string concepto, DateTime fechaPago, DateTime fechaVencimiento,
                                      string metodoPagoComprobante, int? cuotas)
@@ -534,7 +532,7 @@ namespace Proyecto_Club_Deportivo
                 tabla.AddCell("Fecha de pago:");
                 tabla.AddCell(fechaPago.ToString("dd/MM/yyyy"));
 
-                // Método de pago y cuotas (si aplica)
+                
                 tabla.AddCell("Método de pago:");
                 tabla.AddCell(metodoPagoComprobante ?? "-");
 

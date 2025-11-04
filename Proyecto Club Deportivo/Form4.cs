@@ -16,20 +16,20 @@ namespace Proyecto_Club_Deportivo
             InitializeComponent();
 
 
-            // Configurar ComboBox Apto Médico
+            // Configuración de ComboBox Apto Médico
             apto_value.Items.Add("SI");
             apto_value.Items.Add("NO");
             apto_value.SelectedIndex = 0;
             apto_value.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Configurar ComboBox Género
+            // Configuración de ComboBox Género
             genero_value.Items.Add("F");
             genero_value.Items.Add("M");
             genero_value.Items.Add("X");
             genero_value.SelectedIndex = 0;
             genero_value.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Configurar ComboBox Tipo Documento
+            // Configuración de  ComboBox Tipo Documento
             tipoDocu.Items.Add("DNI");
             tipoDocu.Items.Add("LE");
             tipoDocu.Items.Add("LC");
@@ -57,7 +57,7 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            // ✅ VALIDACIÓN 1: Teléfono con 10 dígitos
+            // Validación de N° telefónico 
             if (!Regex.IsMatch(tel_value.Text.Trim(), @"^\d{10}$"))
             {
                 MessageBox.Show("El número de teléfono debe contener exactamente 10 dígitos.",
@@ -65,7 +65,7 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            // ✅ VALIDACIÓN 2: Formato de email válido
+            // Validación de formato valido de Email
             if (!Regex.IsMatch(email_value.Text.Trim(), @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
                 MessageBox.Show("Por favor, ingresá una dirección de correo válida (por ejemplo: usuario@dominio.com).",
@@ -73,7 +73,7 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            // ✅ VALIDACIÓN 3: Fecha de nacimiento con formato xx/xx/xxxx
+            // Validación de formato valido de  Fecha de nacimiento con formato xx/xx/xxxx
             if (!Regex.IsMatch(nacimiento_value.Text.Trim(), @"^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$"))
             {
                 MessageBox.Show("La fecha de nacimiento debe tener el formato DD/MM/AAAA (por ejemplo: 25/10/1990).",

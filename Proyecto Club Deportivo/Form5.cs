@@ -9,7 +9,7 @@ namespace Proyecto_Club_Deportivo
         private Persona persona;
         private string connectionString;
 
-        // Constructor recibe el alumno (datos) y la cadena de conexión
+        // Constructor recibe el alumno (con los datos correspondientes) y la cadena de conexión
         public Form5(Persona persona, string connectionString)
         {
             InitializeComponent();
@@ -17,13 +17,13 @@ namespace Proyecto_Club_Deportivo
             this.connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        // Handler del botón "Registrar Socio"
+        // Botón "Registrar Socio"
         private void altaSocio_Click(object sender, EventArgs e)
         {
             RegistrarAlumno(true);
         }
 
-        // Handler del botón "Registrar No Socio"
+        // Botón "Registrar No Socio"
         private void altaNoSocio_Click(object sender, EventArgs e)
         {
             RegistrarAlumno(false);
@@ -42,7 +42,7 @@ namespace Proyecto_Club_Deportivo
                     {
                         try
                         {
-                            // 1) Insertar en usuariosRegistrados (tabla principal)
+                            // 1) Inserta el nuevo usuario en la tabla de usuariosRegistrados (tabla principal)
                             string insertUsuario = @"
 INSERT INTO usuariosRegistrados
     (nombre, apellido, tipo_documento, dni, telefono, email, nacimiento, apto_medico, genero)
@@ -69,14 +69,14 @@ VALUES
                                 cmd.ExecuteNonQuery();
                             }
 
-                            // 2) Obtener el id del usuario recién insertado
+                            // 2) Obttiene el id del usuario recién insertado
                             long usuarioId;
                             using (MySqlCommand cmdId = new MySqlCommand("SELECT LAST_INSERT_ID();", conn, tran))
                             {
                                 usuarioId = Convert.ToInt64(cmdId.ExecuteScalar());
                             }
 
-                            // 3) Insertar en la tabla correspondiente (Socios o NoSocios)
+                            // 3) Inserta el nuevo usuario en la tabla correspondiente (Socios o NoSocios)
                             string insertSegundaTabla = esSocio ?
                                 "INSERT INTO Socios(usuario_id) VALUES (@usuario_id);" :
                                 "INSERT INTO NoSocios(usuario_id) VALUES (@usuario_id);";
@@ -87,7 +87,7 @@ VALUES
                                 cmd2.ExecuteNonQuery();
                             }
 
-                            // Confirmar transacción
+                            // Confirma operación
                             tran.Commit();
 
                             MessageBox.Show(
@@ -97,13 +97,13 @@ VALUES
                                 MessageBoxIcon.Information
                             );
 
-                            // Si abriste Form5 con ShowDialog() en Form4, devolvemos OK para que Form4 continúe
+                            // Si abriste Form5 con ShowDialog() en Form4, devuelve OK para que Form4 continúe
                             this.DialogResult = DialogResult.OK;
                             this.Close();
                         }
                         catch (Exception exInner)
                         {
-                            // Si algo falla, revertimos la transacción
+                            // Si algo falla, se revierte la transacción
                             try { tran.Rollback(); } catch { }
 
                             MessageBox.Show("Error al completar el registro: " + exInner.Message,
@@ -119,7 +119,7 @@ VALUES
             }
         }
 
-        // Salida/cancelación: cerramos el formulario devolviendo DialogResult.Cancel
+        // Salida/cancelación: se cierra el formulario devolviendo DialogResult.Cancel
         private void salida_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;

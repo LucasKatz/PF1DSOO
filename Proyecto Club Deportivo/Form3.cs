@@ -18,7 +18,7 @@ namespace Proyecto_Club_Deportivo
         {
             InitializeComponent();
 
-            // Conectar el evento Load
+            // Conectar el evento Load (prueba la conexión y carga el Form)
             this.Load += FormActividades_Load;
         }
 
@@ -40,7 +40,7 @@ namespace Proyecto_Club_Deportivo
                 using (MySqlConnection conexion = new MySqlConnection(connectionString))
                 {
                     conexion.Open();
-                    // MessageBox.Show("✅ Conexión exitosa a la base de datos");
+                 
                     return true;
                 }
             }
@@ -67,8 +67,6 @@ namespace Proyecto_Club_Deportivo
                     adapter.Fill(dt);
 
 
-                    //MessageBox.Show("Filas encontradas: " + dt.Rows.Count);
-
                     dgvActividades.DataSource = dt;
                     dgvActividades.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
@@ -78,7 +76,7 @@ namespace Proyecto_Club_Deportivo
                     // Estilos
                     dgvActividades.BackgroundColor = Color.White;
                     dgvActividades.EnableHeadersVisualStyles = true;
-                    // Permitir múltiples líneas en las celdas
+         
                     dgvActividades.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
                     dgvActividades.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 }
