@@ -38,8 +38,8 @@ namespace Proyecto_Club_Deportivo
 
             // Método de Pago
             metodoPago.Items.Clear();
-            metodoPago.Items.Add("Efectivo");
             metodoPago.Items.Add("Transferencia");
+            metodoPago.Items.Add("Efectivo");
             metodoPago.Items.Add("Tarjeta");
             metodoPago.DropDownStyle = ComboBoxStyle.DropDownList;
             metodoPago.SelectedIndex = 0;
@@ -304,13 +304,26 @@ namespace Proyecto_Club_Deportivo
             if (decimal.TryParse(txtPrecio.Text, out decimal precioBase))
             {
                 decimal precioMostrado = precioBase;
+
                 if (metodo.Equals("Efectivo", StringComparison.OrdinalIgnoreCase))
                 {
-                    precioMostrado = Math.Round(precioBase * 0.90m, 2); // 10% de descuento
+                    // Aplicar 10% de descuento
+                    precioMostrado = Math.Round(precioBase * 0.90m, 2);
+
+                    //  Mostrar control de descuento y su valor
+                    descuento.Visible = true;
+                    descuento.Text = $"Descuento aplicado (-10%): ${precioMostrado:0.00}";
                 }
+                else
+                {
+                    // ❌ Ocultar si no es efectivo
+                    descuento.Visible = false;
+                }
+
                 txtPrecio.Text = precioMostrado.ToString("0.00");
             }
         }
+
 
         // Registrar el pago
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
@@ -587,6 +600,10 @@ namespace Proyecto_Club_Deportivo
                 MessageBox.Show("Error al generar carnet PDF: " + ex.Message);
             }
         }
+
+      
+
+       
     }
 }
 

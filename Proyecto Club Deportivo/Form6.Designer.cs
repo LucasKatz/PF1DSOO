@@ -51,6 +51,7 @@
             metodoPago = new ComboBox();
             comboCuotas = new ComboBox();
             cuotas = new Label();
+            descuento = new Label();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -222,7 +223,6 @@
             carnet.TabIndex = 18;
             carnet.Text = "Generar Carnet";
             carnet.UseVisualStyleBackColor = true;
-            carnet.Click += carnet_Click;
             // 
             // metodo
             // 
@@ -262,12 +262,23 @@
             cuotas.TabIndex = 22;
             cuotas.Text = "Cuotas";
             // 
+            // descuento
+            // 
+            descuento.AutoSize = true;
+            descuento.ForeColor = SystemColors.ButtonHighlight;
+            descuento.Location = new Point(230, 467);
+            descuento.Name = "descuento";
+            descuento.Size = new Size(152, 20);
+            descuento.TabIndex = 23;
+            descuento.Text = "Precio con Descuento";
+            // 
             // registroCuota
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1359, 698);
+            Controls.Add(descuento);
             Controls.Add(cuotas);
             Controls.Add(comboCuotas);
             Controls.Add(metodoPago);
@@ -323,5 +334,6 @@
         private ComboBox metodoPago;
         private ComboBox comboCuotas;
         private Label cuotas;
+        private Label descuento;
     }
 }
