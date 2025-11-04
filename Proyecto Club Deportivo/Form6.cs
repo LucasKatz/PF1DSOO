@@ -36,7 +36,7 @@ namespace Proyecto_Club_Deportivo
             comboActividad.Enabled = false; // Deshabilitado hasta que haya usuario válido
             carnet.Visible = false;
 
-            // Metodo de Pago
+            // Método de Pago
             metodoPago.Items.Clear();
             metodoPago.Items.Add("Efectivo");
             metodoPago.Items.Add("Transferencia");
@@ -44,20 +44,15 @@ namespace Proyecto_Club_Deportivo
             metodoPago.DropDownStyle = ComboBoxStyle.DropDownList;
             metodoPago.SelectedIndex = 0;
 
-            // --- Configurar comboCuotas (se muestra solo si se selecciona TARJETA como metodo de pago) ---
-            if (comboCuotas != null)
-            {
-                comboCuotas.Items.Clear();
-                comboCuotas.Items.Add("1");
-                comboCuotas.Items.Add("3");
-                comboCuotas.Items.Add("6");
-                comboCuotas.DropDownStyle = ComboBoxStyle.DropDownList;
-                comboCuotas.SelectedIndex = -1;
-                comboCuotas.Visible = false;
-            }
+            // Configurar comboCuotas (visible solo si se selecciona Tarjeta)
+            comboCuotas.Items.Clear();
+            comboCuotas.Items.AddRange(new[] { "1", "3", "6" });
+            comboCuotas.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboCuotas.SelectedIndex = -1;
+            comboCuotas.Visible = false;
         }
 
-        // Se cargan las actividades al abrir el formulario
+        // Cargar actividades al abrir el formulario
         private void registroCuota_Load(object sender, EventArgs e)
         {
             CargarActividades();
@@ -70,7 +65,7 @@ namespace Proyecto_Club_Deportivo
                 try
                 {
                     conexion.Open();
-                    // Si NO es socio, se excluye la opción CUOTA de las actividaes
+                    // Si NO es socio, se excluye la opción CUOTA de las actividades
                     string query = "SELECT id, nombre, precio FROM Actividades WHERE UPPER(nombre) <> 'CUOTA' AND UPPER(nombre) <> 'CUOTA MENSUAL'";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
@@ -92,12 +87,12 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // El precio se muestra automaticamente al seleccionar la actividad, el precio inicial por defecto es 0
+        // Mostrar precio automáticamente al seleccionar actividad
         private void comboActividad_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (comboActividad.SelectedValue == null)
             {
-                txtPrecio.Text = "0.00"; 
+                txtPrecio.Text = "0.00";
                 return;
             }
 
@@ -126,14 +121,12 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // El botón busca el usuario en la base de datos por tipo y N° de documento
+        // Buscar usuario por tipo y número de documento
         private void buscar_Click(object sender, EventArgs e)
         {
-            // Obtener tipo y número de documento
             string tipo = tipoDocu.SelectedItem != null ? tipoDocu.SelectedItem.ToString() : "";
             string numero = docuValue.Text.Trim();
 
-            // Validación de campos vacíos
             if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(numero))
             {
                 MessageBox.Show("Por favor, seleccione el tipo de documento e ingrese el número antes de buscar.",
@@ -164,13 +157,11 @@ namespace Proyecto_Club_Deportivo
                         {
                             if (reader.Read())
                             {
-                                // Se cargan datos en los campos
                                 txtNombre.Text = reader["nombre"].ToString();
                                 txtApellido.Text = reader["apellido"].ToString();
                                 txtSocio.Text = reader["socio"].ToString();
                                 txtUserID.Text = reader["id"].ToString();
 
-                                // Se bloquean campos para que no puedan ser modificados manualmente
                                 txtNombre.ReadOnly = true;
                                 txtApellido.ReadOnly = true;
                                 txtSocio.ReadOnly = true;
@@ -178,7 +169,6 @@ namespace Proyecto_Club_Deportivo
 
                                 comboActividad.Enabled = true;
 
-                                // Se muestra o se oculta el botón de carnet según si es socio
                                 if (reader["socio"].ToString().Trim().ToUpper() == "SI")
                                 {
                                     CargarSoloCuota();
@@ -192,13 +182,11 @@ namespace Proyecto_Club_Deportivo
                             }
                             else
                             {
-                                // Aviso de usuario no encontrado
                                 MessageBox.Show("No se encontró ninguna persona registrada con los datos ingresados.",
                                                 "Usuario no registrado",
                                                 MessageBoxButtons.OK,
                                                 MessageBoxIcon.Information);
 
-                                // 🔹 Limpiar campos y bloquear controles
                                 txtNombre.Clear();
                                 txtApellido.Clear();
                                 txtSocio.Clear();
@@ -219,7 +207,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Se carga  solo la opción "Cuota mensual"
+        // Cargar solo la opción "Cuota mensual" para socios
         private void CargarSoloCuota()
         {
             comboActividad.DataSource = null;
@@ -228,6 +216,7 @@ namespace Proyecto_Club_Deportivo
             dt.Columns.Add("nombre", typeof(string));
             dt.Columns.Add("precio", typeof(decimal));
 
+            // ID y precio fijos para "Cuota mensual"
             dt.Rows.Add(11, "Cuota mensual", 12000);
 
             comboActividad.DataSource = dt;
@@ -265,16 +254,15 @@ namespace Proyecto_Club_Deportivo
                     throw new Exception("No se pudieron identificar días válidos en el horario.");
 
                 DateTime proximaClase = fechaActual.Date;
-                // buscamos la próxima fecha que coincida con algún día de la actividad
-                for (int i = 1; i <= 14; i++) // la función tiene un limite 2 semanas para evitar loop infinito
+                // Buscar la próxima fecha que coincida con algún día de la actividad
+                for (int i = 1; i <= 14; i++) // límite de 2 semanas para evitar bucles infinitos
                 {
                     proximaClase = proximaClase.AddDays(1);
                     if (diasClase.Contains(proximaClase.DayOfWeek))
                         return proximaClase;
                 }
 
-                // Si no se encuentra en 14 días, devolvemos +7 días como fallback
-                return fechaActual.AddDays(7);
+                return fechaActual.AddDays(7); // fallback
             }
         }
 
@@ -293,7 +281,7 @@ namespace Proyecto_Club_Deportivo
             };
         }
 
-        // Evento para cuando cambia el método de pago
+        // Evento para cambio de método de pago
         private void metodoPago_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (metodoPago.SelectedItem == null)
@@ -303,37 +291,28 @@ namespace Proyecto_Club_Deportivo
 
             if (metodo.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase))
             {
-                // Se muestra la cantidad de cuotas posibles
-                if (comboCuotas != null)
-                {
-                    comboCuotas.Visible = true;
-                    comboCuotas.SelectedIndex = 0; //Por defecto se sugiere 1 sola cuota al iniciar
-                }
+                comboCuotas.Visible = true;
+                comboCuotas.SelectedIndex = 0; // Por defecto 1 cuota
             }
             else
             {
-                
-                if (comboCuotas != null)
-                {
-                    comboCuotas.SelectedIndex = -1;
-                    comboCuotas.Visible = false;
-                }
+                comboCuotas.SelectedIndex = -1;
+                comboCuotas.Visible = false;
             }
 
-            // Si se selecciona Efectivo, recalcula precio en pantalla mostrando descuento
+            // Si se selecciona Efectivo, recalcula precio en pantalla mostrando descuento real
             if (decimal.TryParse(txtPrecio.Text, out decimal precioBase))
             {
                 decimal precioMostrado = precioBase;
                 if (metodo.Equals("Efectivo", StringComparison.OrdinalIgnoreCase))
                 {
-                    precioMostrado = Math.Round(precioBase * 0.90m, 2); // 10% off
+                    precioMostrado = Math.Round(precioBase * 0.90m, 2); // 10% de descuento
                 }
-                // Muestra el precio con dos decimales
                 txtPrecio.Text = precioMostrado.ToString("0.00");
             }
         }
 
-        //  Registrar el pago
+        // Registrar el pago
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtUserID.Text))
@@ -359,11 +338,13 @@ namespace Proyecto_Club_Deportivo
             DateTime fechaPago = DateTime.Now;
             DateTime fechaVencimiento;
 
-            string metodoSeleccionado = metodoPago.SelectedItem != null ? metodoPago.SelectedItem.ToString() : "Efectivo";
+            string metodoSeleccionado = metodoPago.SelectedItem?.ToString() ?? "Efectivo";
             int? cuotas = null;
-            if (metodoSeleccionado.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase) && comboCuotas != null && comboCuotas.SelectedItem != null)
+            if (metodoSeleccionado.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase) &&
+                comboCuotas?.SelectedItem != null &&
+                int.TryParse(comboCuotas.SelectedItem.ToString(), out int c))
             {
-                if (int.TryParse(comboCuotas.SelectedItem.ToString(), out int c)) cuotas = c;
+                cuotas = c;
             }
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
@@ -394,7 +375,6 @@ namespace Proyecto_Club_Deportivo
                             }
                             else
                             {
-                                // Se calcula a partir de la última fecha de pago
                                 proximoVencimiento = CalcularProximaClase(conexion, actividadId, lastPagoDate);
                             }
 
@@ -409,21 +389,18 @@ namespace Proyecto_Club_Deportivo
                         }
                     }
 
-                    // 2) Determinar vencimiento para este pago (se incluye en el comprobante)
+                    // Determinar vencimiento
                     if (comboActividad.Text.ToUpper().Contains("CUOTA"))
                         fechaVencimiento = fechaPago.AddMonths(1);
                     else
                         fechaVencimiento = CalcularProximaClase(conexion, actividadId, fechaPago);
 
-                    //  3) Aplicar descuento si es efectivo (10%)
-                    decimal montoFinal = precioIngresado;
-                    if (metodoSeleccionado.Equals("Efectivo", StringComparison.OrdinalIgnoreCase))
-                    {
-                        
-                        montoFinal = precioIngresado;
-                    }
+                    // Aplicar descuento real si es efectivo
+                    decimal montoFinal = metodoSeleccionado.Equals("Efectivo", StringComparison.OrdinalIgnoreCase)
+                        ? Math.Round(precioIngresado * 0.90m, 2)
+                        : precioIngresado;
 
-                    // Se cargan los datos del pago en la BB DD
+                    // Insertar pago
                     string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, metodo, cuotas)
                                            VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago, @metodo, @cuotas);";
 
@@ -434,15 +411,11 @@ namespace Proyecto_Club_Deportivo
                         cmd.Parameters.AddWithValue("@monto", montoFinal);
                         cmd.Parameters.AddWithValue("@fecha_pago", fechaPago);
                         cmd.Parameters.AddWithValue("@metodo", metodoSeleccionado);
-                        if (cuotas.HasValue)
-                            cmd.Parameters.AddWithValue("@cuotas", cuotas.Value);
-                        else
-                            cmd.Parameters.AddWithValue("@cuotas", DBNull.Value);
-
+                        cmd.Parameters.AddWithValue("@cuotas", cuotas.HasValue ? (object)cuotas.Value : DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
 
-                    //  5) Se genera el comprobante incluyendo metodo y cuotas
+                    // Generar comprobante PDF
                     GenerarComprobantePDF(
                         txtNombre.Text,
                         txtApellido.Text,
@@ -486,8 +459,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-
-        //Función que genera el comprobante de pago en PDF
+        // Generar comprobante PDF
         private void GenerarComprobantePDF(string nombre, string apellido, string tipoDoc, string numeroDoc,
                                      string monto, string concepto, DateTime fechaPago, DateTime fechaVencimiento,
                                      string metodoPagoComprobante, int? cuotas)
@@ -531,8 +503,6 @@ namespace Proyecto_Club_Deportivo
                 tabla.AddCell(concepto);
                 tabla.AddCell("Fecha de pago:");
                 tabla.AddCell(fechaPago.ToString("dd/MM/yyyy"));
-
-                
                 tabla.AddCell("Método de pago:");
                 tabla.AddCell(metodoPagoComprobante ?? "-");
 
@@ -542,7 +512,7 @@ namespace Proyecto_Club_Deportivo
                     tabla.AddCell(cuotas.HasValue ? cuotas.Value.ToString() : "-");
                 }
 
-                if (!concepto.Equals("Cuota", StringComparison.OrdinalIgnoreCase) && !concepto.ToUpper().Contains("CUOTA"))
+                if (!concepto.ToUpper().Contains("CUOTA"))
                 {
                     tabla.AddCell("Vencimiento:");
                     tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
@@ -567,6 +537,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
+        // Generar carnet PDF
         private void GenerarCarnetPDF(string nombre, string apellido, string numeroSocio, DateTime fechaAlta)
         {
             try
@@ -579,37 +550,29 @@ namespace Proyecto_Club_Deportivo
                 if (!Directory.Exists(carpetaCarnets))
                     Directory.CreateDirectory(carpetaCarnets);
 
-
-                string nombreArchivo = $"Carnet_{nombre}_{apellido}_{fechaAlta:yyyyMMdd_HHmmss}.pdf";
+                string nombreArchivo = $"Carnet_{nombre}_{apellido}.pdf";
                 string rutaArchivo = Path.Combine(carpetaCarnets, nombreArchivo);
 
-                Document doc = new Document(PageSize.A4, 40, 40, 40, 40);
+                Document doc = new Document(PageSize.A7.Rotate(), 20, 20, 20, 20);
                 PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
                 doc.Open();
 
-                Paragraph titulo = new Paragraph("Carnet de Socio",
-                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 18, iTextSharp.text.Font.BOLD));
-                titulo.Alignment = Element.ALIGN_CENTER;
-                doc.Add(titulo);
-                doc.Add(new Paragraph(" "));
-                doc.Add(new Paragraph(" "));
-
-                PdfPTable tabla = new PdfPTable(2);
+                PdfPTable tabla = new PdfPTable(1);
                 tabla.WidthPercentage = 100;
+                tabla.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-                tabla.AddCell("Nombre:");
-                tabla.AddCell(nombre);
-                tabla.AddCell("Apellido:");
-                tabla.AddCell(apellido);
-                tabla.AddCell("N° de Socio:");
-                tabla.AddCell(numeroSocio);
-                tabla.AddCell("Fecha de Alta:");
-                tabla.AddCell(fechaAlta.ToString("dd/MM/yyyy"));
 
+                PdfPCell celdaTitulo = new PdfPCell(new Phrase("Club Deportivo - Carnet de Socio",
+                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.BOLD)));
+                celdaTitulo.HorizontalAlignment = Element.ALIGN_CENTER;
+                celdaTitulo.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                tabla.AddCell(celdaTitulo);
+                tabla.AddCell(new Phrase($"Nombre: {nombre}"));
+                tabla.AddCell(new Phrase($"Apellido: {apellido}"));
+                tabla.AddCell(new Phrase($"N° Socio: {numeroSocio}"));
+                tabla.AddCell(new Phrase($"Alta: {fechaAlta:dd/MM/yyyy}"));
+                tabla.AddCell(new Phrase($"Válido hasta: {fechaAlta.AddYears(1):dd/MM/yyyy}"));
                 doc.Add(tabla);
-                doc.Add(new Paragraph(" "));
-                doc.Add(new Paragraph("Bienvenido al club.",
-                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
 
                 doc.Close();
 
@@ -621,40 +584,9 @@ namespace Proyecto_Club_Deportivo
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al generar el PDF: " + ex.Message);
-            }
-        }
-
-        private void carnet_Click(object sender, EventArgs e)
-        {
-            string nombre = txtNombre.Text;
-            string apellido = txtApellido.Text;
-            string numeroSocio = txtUserID.Text;
-            DateTime fechaAlta = DateTime.Now;
-
-            GenerarCarnetPDF(nombre, apellido, numeroSocio, fechaAlta);
-        }
-
-
-
-   
-
-        private void comboMetodo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string metodo = comboCuotas.SelectedItem.ToString();
-
-            if (metodo == "Tarjeta")
-            {
-                comboCuotas.Items.Clear();
-                comboCuotas.Items.Add("1");
-                comboCuotas.Items.Add("3");
-                comboCuotas.Items.Add("6");
-                comboCuotas.Visible = true;
-            }
-            else
-            {
-                comboCuotas.Visible = false;
+                MessageBox.Show("Error al generar carnet PDF: " + ex.Message);
             }
         }
     }
 }
+
