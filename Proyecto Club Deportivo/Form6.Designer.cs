@@ -223,6 +223,7 @@
             carnet.TabIndex = 18;
             carnet.Text = "Generar Carnet";
             carnet.UseVisualStyleBackColor = true;
+            carnet.Click += carnet_Click;
             // 
             // metodo
             // 

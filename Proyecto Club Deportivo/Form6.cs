@@ -563,32 +563,84 @@ namespace Proyecto_Club_Deportivo
                 if (!Directory.Exists(carpetaCarnets))
                     Directory.CreateDirectory(carpetaCarnets);
 
-                string nombreArchivo = $"Carnet_{nombre}_{apellido}.pdf";
+                string nombreArchivo = $"Carnet_{nombre}_{apellido}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string rutaArchivo = Path.Combine(carpetaCarnets, nombreArchivo);
 
-                Document doc = new Document(PageSize.A7.Rotate(), 20, 20, 20, 20);
-                PdfWriter.GetInstance(doc, new FileStream(rutaArchivo, FileMode.Create));
-                doc.Open();
+                // Tamaño carnet + márgenes mínimos
+                iTextSharp.text.Rectangle tamaño = new iTextSharp.text.Rectangle(250, 150);
+                using (FileStream fs = new FileStream(rutaArchivo, FileMode.Create))
+                {
+                    using (Document doc = new Document(tamaño, 5, 5, 5, 5))
+                    {
+                        PdfWriter writer = PdfWriter.GetInstance(doc, fs);
+                        doc.Open();
 
-                PdfPTable tabla = new PdfPTable(1);
-                tabla.WidthPercentage = 100;
-                tabla.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        // Estilos del carnet de socio
+                        PdfContentByte fondo = writer.DirectContentUnder;
+                        fondo.SetColorFill(new iTextSharp.text.BaseColor(173, 216, 230));
+                        fondo.Rectangle(0, 0, tamaño.Width, tamaño.Height);
+                        fondo.Fill();
 
 
-                PdfPCell celdaTitulo = new PdfPCell(new Phrase("Club Deportivo - Carnet de Socio",
-                    new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.BOLD)));
-                celdaTitulo.HorizontalAlignment = Element.ALIGN_CENTER;
-                celdaTitulo.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                tabla.AddCell(celdaTitulo);
-                tabla.AddCell(new Phrase($"Nombre: {nombre}"));
-                tabla.AddCell(new Phrase($"Apellido: {apellido}"));
-                tabla.AddCell(new Phrase($"N° Socio: {numeroSocio}"));
-                tabla.AddCell(new Phrase($"Alta: {fechaAlta:dd/MM/yyyy}"));
-                tabla.AddCell(new Phrase($"Válido hasta: {fechaAlta.AddYears(1):dd/MM/yyyy}"));
-                doc.Add(tabla);
+                        var fuenteTitulo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.WHITE);
+                        var fuenteCampo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLACK);
+                        var fuenteDato = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8, iTextSharp.text.Font.NORMAL, iTextSharp.text.BaseColor.BLACK);
 
-                doc.Close();
+                       
+                        PdfPTable tablaPrincipal = new PdfPTable(2);
+                        tablaPrincipal.TotalWidth = tamaño.Width - 10;
+                        tablaPrincipal.LockedWidth = true;
+                        tablaPrincipal.SetWidths(new float[] { 1f, 2f });
+                        tablaPrincipal.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
+                        
+                        PdfPCell celdaFoto = new PdfPCell(new Phrase("Foto 4x4", fuenteDato));
+                        celdaFoto.FixedHeight = 80; // más bajo
+                        celdaFoto.HorizontalAlignment = Element.ALIGN_CENTER;
+                        celdaFoto.VerticalAlignment = Element.ALIGN_MIDDLE;
+                        celdaFoto.Border = iTextSharp.text.Rectangle.BOX;
+                        celdaFoto.BorderColor = new iTextSharp.text.BaseColor(255, 255, 255);
+                        celdaFoto.BackgroundColor = new iTextSharp.text.BaseColor(220, 220, 220);
+                        tablaPrincipal.AddCell(celdaFoto);
+
+                       
+                        PdfPTable tablaDatos = new PdfPTable(2);
+                        tablaDatos.WidthPercentage = 100;
+                        tablaDatos.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+
+                        
+                        PdfPCell celdaTitulo = new PdfPCell(new Phrase("Club Deportivo 29", fuenteTitulo));
+                        celdaTitulo.Colspan = 2;
+                        celdaTitulo.HorizontalAlignment = Element.ALIGN_CENTER;
+                        celdaTitulo.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        celdaTitulo.BackgroundColor = new iTextSharp.text.BaseColor(0, 102, 204);
+                        celdaTitulo.Padding = 3;
+                        tablaDatos.AddCell(celdaTitulo);
+
+                       
+                        tablaDatos.AddCell(new Phrase("Nombre", fuenteDato));
+                        tablaDatos.AddCell(new Phrase(nombre, fuenteCampo));
+
+                        
+                        tablaDatos.AddCell(new Phrase("Apellido", fuenteDato));
+                        tablaDatos.AddCell(new Phrase(apellido, fuenteCampo));
+
+                        
+                        tablaDatos.AddCell(new Phrase("N° Socio", fuenteDato));
+                        tablaDatos.AddCell(new Phrase(numeroSocio, fuenteCampo));
+                        tablaDatos.AddCell(new Phrase("Desde", fuenteDato));
+                        tablaDatos.AddCell(new Phrase(fechaAlta.ToString("dd/MM/yyyy"), fuenteCampo));
+
+                        PdfPCell celdaDatos = new PdfPCell(tablaDatos);
+                        celdaDatos.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        tablaPrincipal.AddCell(celdaDatos);
+
+                        doc.Add(tablaPrincipal);
+                        doc.Close();
+                    }
+                }
+
+                // Abre el archivo
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
                     FileName = rutaArchivo,
@@ -601,9 +653,28 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-      
 
-       
+
+        private void carnet_Click(object sender, EventArgs e)
+        {
+            // Verificamos que los campos no estén vacíos
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtApellido.Text) ||
+                string.IsNullOrWhiteSpace(txtUserID.Text))
+            {
+                MessageBox.Show("Debe completar los datos del socio antes de generar el carnet.");
+                return;
+            }
+
+            
+            GenerarCarnetPDF(
+                txtNombre.Text,
+                txtApellido.Text,
+                txtUserID.Text,
+                DateTime.Now 
+            );
+        }
+
     }
 }
 
