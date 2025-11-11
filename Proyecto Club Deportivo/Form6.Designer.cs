@@ -52,6 +52,8 @@
             comboCuotas = new ComboBox();
             cuotas = new Label();
             descuento = new Label();
+            label1 = new Label();
+            textBox1 = new TextBox();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -203,7 +205,7 @@
             button1.TabIndex = 16;
             button1.Text = "Salir";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click_1;
+       
             // 
             // button2
             // 
@@ -213,7 +215,7 @@
             button2.TabIndex = 17;
             button2.Text = "Volver";
             button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+        
             // 
             // carnet
             // 
@@ -273,12 +275,31 @@
             descuento.TabIndex = 23;
             descuento.Text = "Precio con Descuento";
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.ForeColor = SystemColors.ButtonHighlight;
+            label1.Location = new Point(589, 285);
+            label1.Name = "label1";
+            label1.Size = new Size(153, 20);
+            label1.TabIndex = 24;
+            label1.Text = "Fecha de Habilitación";
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(785, 285);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(176, 27);
+            textBox1.TabIndex = 25;
+            // 
             // registroCuota
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1359, 698);
+            Controls.Add(textBox1);
+            Controls.Add(label1);
             Controls.Add(descuento);
             Controls.Add(cuotas);
             Controls.Add(comboCuotas);
@@ -336,5 +357,7 @@
         private ComboBox comboCuotas;
         private Label cuotas;
         private Label descuento;
+        private Label label1;
+        private TextBox textBox1;
     }
 }
