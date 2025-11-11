@@ -172,16 +172,22 @@ namespace Proyecto_Club_Deportivo
                                     CargarSoloCuota();
                                     carnet.Visible = true;
 
-                                    // 🔹 Cerrar reader para realizar nuevas consultas
+                                    // 🔹 Asegurar visibilidad al confirmar que es socio
+                                    Habilitacion.Visible = true;
+                                    Vencimiento.Visible = true;
+                                    label1.Visible = true;
+                                    label2.Visible = true;
+
+                                    // 🔹 Cerrar reader antes de nuevas consultas
                                     reader.Close();
 
                                     int usuarioId = Convert.ToInt32(txtUserID.Text);
 
                                     // 🔹 Verificar si está habilitado
                                     string habilitadoQuery = @"SELECT fecha_vencimiento 
-                                                       FROM Habilitados 
-                                                       WHERE usuario_id = @usuario_id
-                                                       ORDER BY fecha_vencimiento DESC LIMIT 1;";
+                               FROM Habilitados 
+                               WHERE usuario_id = @usuario_id
+                               ORDER BY fecha_vencimiento DESC LIMIT 1;";
 
                                     using (MySqlCommand cmdH = new MySqlCommand(habilitadoQuery, conexion))
                                     {
@@ -191,13 +197,6 @@ namespace Proyecto_Club_Deportivo
                                         if (fechaH != null && fechaH != DBNull.Value)
                                         {
                                             DateTime vencimiento = Convert.ToDateTime(fechaH);
-
-                                            // ✅ Mostrar campos solo si hay dato
-                                            Habilitacion.Visible = true;
-                                            Vencimiento.Visible = true;
-                                            label1.Visible = true;
-                                            label2.Visible = true;
-
                                             Habilitacion.Text = "HABILITADO";
                                             Vencimiento.Text = vencimiento.ToString("dd/MM/yyyy");
                                             Console.WriteLine($"✅ Usuario habilitado hasta {vencimiento:dd/MM/yyyy}");
@@ -207,9 +206,9 @@ namespace Proyecto_Club_Deportivo
 
                                     // 🔹 Si no está en Habilitados, revisar NoHabilitados
                                     string noHabilitadoQuery = @"SELECT fecha_vencimiento 
-                                                         FROM NoHabilitados 
-                                                         WHERE usuario_id = @usuario_id
-                                                         ORDER BY fecha_vencimiento DESC LIMIT 1;";
+                                 FROM NoHabilitados 
+                                 WHERE usuario_id = @usuario_id
+                                 ORDER BY fecha_vencimiento DESC LIMIT 1;";
 
                                     using (MySqlCommand cmdN = new MySqlCommand(noHabilitadoQuery, conexion))
                                     {
@@ -219,32 +218,22 @@ namespace Proyecto_Club_Deportivo
                                         if (fechaN != null && fechaN != DBNull.Value)
                                         {
                                             DateTime vencimiento = Convert.ToDateTime(fechaN);
-
-                                            // ✅ Mostrar campos solo si hay dato
-                                            Habilitacion.Visible = true;
-                                            Vencimiento.Visible = true;
-                                            label1.Visible = true;
-                                            label2.Visible = true;
-
                                             Habilitacion.Text = "NO HABILITADO";
                                             Vencimiento.Text = vencimiento.ToString("dd/MM/yyyy");
                                             Console.WriteLine($"❌ Usuario no habilitado (venció el {vencimiento:dd/MM/yyyy})");
                                         }
                                         else
                                         {
-                                            // 🔸 Ocultar si no hay registro alguno
-                                            Habilitacion.Visible = false;
-                                            Vencimiento.Visible = false;
-                                            label1.Visible = false;
-                                            label2.Visible = false;
-
-                                            Habilitacion.Text = "-";
+                                            // ✅ Mostrar igualmente los campos, aunque sin registro
+                                            Habilitacion.Text = "";
                                             Vencimiento.Text = "-";
                                             Console.WriteLine("⚠️ Usuario sin registro de habilitación.");
                                         }
                                     }
-                                }
-                                else
+                                
+                                
+                            }
+                            else
                                 {
                                     // 🔸 Si NO es socio
                                     CargarActividades();
@@ -360,7 +349,7 @@ namespace Proyecto_Club_Deportivo
             {
                 decimal precioFinal = precioBase * (1 + cuotaSeleccionada.Interes);
                 txtPrecio.Text = precioFinal.ToString("0.00");
-                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con {cuotaSeleccionada.Interes * 100}% de interés.\nMonto total: ${precioFinal:0.00}");
+                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con 0% de interès");
             }
         }
 
@@ -418,7 +407,25 @@ namespace Proyecto_Club_Deportivo
             int usuarioId = Convert.ToInt32(txtUserID.Text);
             int actividadId = Convert.ToInt32(comboActividad.SelectedValue);
             string metodoSeleccionado = metodoPago.SelectedItem?.ToString() ?? "Efectivo";
-            int? cuotas = comboCuotas?.SelectedItem is Cuota c ? c.Cantidad : null;
+            int? cuotas = null;
+
+            if (metodoSeleccionado.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase))
+            {
+                if (comboCuotas.SelectedItem is Cuota c)
+                {
+                    cuotas = c.Cantidad;
+                }
+                else
+                {
+                    MessageBox.Show("Debe seleccionar la cantidad de cuotas para pagos con tarjeta.");
+                    return;
+                }
+            }
+            else
+            {
+                cuotas = null; // efectivo o transferencia
+            }
+
             DateTime fechaPago = DateTime.Now;
             DateTime fechaVencimiento;
 

@@ -114,11 +114,11 @@ namespace Proyecto_Club_Deportivo
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                string query = "SELECT COUNT(*) FROM usuariosRegistrados WHERE tipo_documento = @tipo AND dni = @dni";
+                string query = "SELECT COUNT(*) FROM usuariosRegistrados WHERE tipo_documento = @tipo AND numDocumento = @numDocumento";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@tipo", tipoDocumento);
-                    cmd.Parameters.AddWithValue("@dni", dni);
+                    cmd.Parameters.AddWithValue("@numDocumento", dni);
 
                     try
                     {

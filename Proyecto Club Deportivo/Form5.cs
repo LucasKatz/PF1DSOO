@@ -45,16 +45,16 @@ namespace Proyecto_Club_Deportivo
                             // 1) Inserta el nuevo usuario en la tabla de usuariosRegistrados (tabla principal)
                             string insertUsuario = @"
 INSERT INTO usuariosRegistrados
-    (nombre, apellido, tipo_documento, dni, telefono, email, nacimiento, apto_medico, genero)
+    (nombre, apellido, tipo_documento, numDocumento, telefono, email, nacimiento, apto_medico, genero)
 VALUES
-    (@nombre, @apellido, @tipo_documento, @dni, @telefono, @email, @nacimiento, @apto, @genero);";
+    (@nombre, @apellido, @tipo_documento, @numDocumento, @telefono, @email, @nacimiento, @apto, @genero);";
 
                             using (MySqlCommand cmd = new MySqlCommand(insertUsuario, conn, tran))
                             {
                                 cmd.Parameters.AddWithValue("@nombre", persona.Nombre ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@apellido", persona.Apellido ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@tipo_documento", persona.TipoDocumento ?? "DNI");
-                                cmd.Parameters.AddWithValue("@dni", persona.numDocumento ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@numDocumento", persona.numDocumento ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@telefono", persona.Telefono ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@email", persona.Email ?? (object)DBNull.Value);
 

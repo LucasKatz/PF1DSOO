@@ -51,7 +51,7 @@
             pagoActividad.Name = "pagoActividad";
             pagoActividad.Size = new Size(180, 83);
             pagoActividad.TabIndex = 3;
-            pagoActividad.Text = "Registrar Actividad";
+            pagoActividad.Text = "Listar Actividades";
             pagoActividad.UseVisualStyleBackColor = true;
             pagoActividad.Click += RegistrarActividad_Click;
             // 
