@@ -240,7 +240,7 @@
             metodoPago.FormattingEnabled = true;
             metodoPago.Location = new Point(888, 348);
             metodoPago.Name = "metodoPago";
-            metodoPago.Size = new Size(151, 28);
+            metodoPago.Size = new Size(194, 28);
             metodoPago.TabIndex = 20;
             metodoPago.SelectedIndexChanged += metodoPago_SelectedIndexChanged;
             // 
@@ -250,7 +250,7 @@
             comboCuotas.Items.AddRange(new object[] { "1 3 6" });
             comboCuotas.Location = new Point(888, 400);
             comboCuotas.Name = "comboCuotas";
-            comboCuotas.Size = new Size(151, 28);
+            comboCuotas.Size = new Size(194, 28);
             comboCuotas.TabIndex = 21;
             // 
             // cuotas

@@ -46,18 +46,33 @@ namespace Proyecto_Club_Deportivo
 
             // Configurar comboCuotas (visible solo si se selecciona Tarjeta)
             comboCuotas.Items.Clear();
-            comboCuotas.Items.AddRange(new[] { "1", "3", "6" });
             comboCuotas.DropDownStyle = ComboBoxStyle.DropDownList;
             comboCuotas.SelectedIndex = -1;
             comboCuotas.Visible = false;
         }
 
-        // Cargar actividades al abrir el formulario
+        // Evento de carga del formulario
         private void registroCuota_Load(object sender, EventArgs e)
         {
             CargarActividades();
+            CargarCuotasDisponibles();
         }
 
+        // Cargar lista de cuotas como objetos
+        private void CargarCuotasDisponibles()
+        {
+            var cuotasDisponibles = new List<Cuota>
+            {
+                new Cuota { Cantidad = 3, Interes = 0.05m, Descripcion = "3 cuotas (0% interés)" },
+                new Cuota { Cantidad = 6, Interes = 0.10m, Descripcion = "6 cuotas (0% interés)" }
+            };
+
+            comboCuotas.DataSource = cuotasDisponibles;
+            comboCuotas.DisplayMember = "Descripcion";
+            comboCuotas.ValueMember = "Cantidad";
+        }
+
+        // Cargar actividades al abrir el formulario
         private void CargarActividades()
         {
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
@@ -216,7 +231,6 @@ namespace Proyecto_Club_Deportivo
             dt.Columns.Add("nombre", typeof(string));
             dt.Columns.Add("precio", typeof(decimal));
 
-            // ID y precio fijos para "Cuota mensual"
             dt.Rows.Add(11, "Cuota mensual", 12000);
 
             comboActividad.DataSource = dt;
@@ -245,24 +259,21 @@ namespace Proyecto_Club_Deportivo
                 foreach (var dia in dias)
                 {
                     if (horario.Contains(dia, StringComparison.OrdinalIgnoreCase))
-                    {
                         diasClase.Add(ConvertirDia(dia));
-                    }
                 }
 
                 if (diasClase.Count == 0)
                     throw new Exception("No se pudieron identificar días válidos en el horario.");
 
                 DateTime proximaClase = fechaActual.Date;
-                // Buscar la próxima fecha que coincida con algún día de la actividad
-                for (int i = 1; i <= 14; i++) // límite de 2 semanas para evitar bucles infinitos
+                for (int i = 1; i <= 14; i++)
                 {
                     proximaClase = proximaClase.AddDays(1);
                     if (diasClase.Contains(proximaClase.DayOfWeek))
                         return proximaClase;
                 }
 
-                return fechaActual.AddDays(7); // fallback
+                return fechaActual.AddDays(7);
             }
         }
 
@@ -300,23 +311,18 @@ namespace Proyecto_Club_Deportivo
                 comboCuotas.Visible = false;
             }
 
-            // Si se selecciona Efectivo, recalcula precio en pantalla mostrando descuento real
             if (decimal.TryParse(txtPrecio.Text, out decimal precioBase))
             {
                 decimal precioMostrado = precioBase;
 
                 if (metodo.Equals("Efectivo", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Aplicar 10% de descuento
                     precioMostrado = Math.Round(precioBase * 0.90m, 2);
-
-                    //  Mostrar control de descuento y su valor
                     descuento.Visible = true;
                     descuento.Text = $"Descuento aplicado (-10%): ${precioMostrado:0.00}";
                 }
                 else
                 {
-                    // ❌ Ocultar si no es efectivo
                     descuento.Visible = false;
                 }
 
@@ -324,6 +330,27 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
+        // Clase Cuota
+        public class Cuota
+        {
+            public int Cantidad { get; set; }
+            public decimal Interes { get; set; }
+            public string Descripcion { get; set; }
+
+            public override string ToString() => Descripcion;
+        }
+
+        private void comboCuotas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboCuotas.SelectedItem is Cuota cuotaSeleccionada && decimal.TryParse(txtPrecio.Text, out decimal precioBase))
+            {
+                decimal precioFinal = precioBase * (1 + cuotaSeleccionada.Interes);
+                txtPrecio.Text = precioFinal.ToString("0.00");
+
+                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con {cuotaSeleccionada.Interes * 100}% de interés.\n" +
+                                $"Monto total: ${precioFinal:0.00}");
+            }
+        }
 
         // Registrar el pago
         private void btnRegistrarPago_Click_1(object sender, EventArgs e)
@@ -353,11 +380,11 @@ namespace Proyecto_Club_Deportivo
 
             string metodoSeleccionado = metodoPago.SelectedItem?.ToString() ?? "Efectivo";
             int? cuotas = null;
+
             if (metodoSeleccionado.Equals("Tarjeta", StringComparison.OrdinalIgnoreCase) &&
-                comboCuotas?.SelectedItem != null &&
-                int.TryParse(comboCuotas.SelectedItem.ToString(), out int c))
+                comboCuotas?.SelectedItem is Cuota cuotaSeleccionada)
             {
-                cuotas = c;
+                cuotas = cuotaSeleccionada.Cantidad;
             }
 
             using (MySqlConnection conexion = new MySqlConnection(connectionString))
@@ -370,6 +397,7 @@ namespace Proyecto_Club_Deportivo
                     string lastPagoQuery = @"SELECT fecha_pago FROM Pagos 
                                              WHERE usuario_id = @usuario_id AND actividad_id = @actividad_id
                                              ORDER BY fecha_pago DESC LIMIT 1;";
+
                     using (MySqlCommand cmdLast = new MySqlCommand(lastPagoQuery, conexion))
                     {
                         cmdLast.Parameters.AddWithValue("@usuario_id", usuarioId);
@@ -383,13 +411,9 @@ namespace Proyecto_Club_Deportivo
                             string nombreActividad = comboActividad.Text ?? "";
 
                             if (nombreActividad.ToUpper().Contains("CUOTA"))
-                            {
                                 proximoVencimiento = lastPagoDate.AddMonths(1);
-                            }
                             else
-                            {
                                 proximoVencimiento = CalcularProximaClase(conexion, actividadId, lastPagoDate);
-                            }
 
                             if (proximoVencimiento > DateTime.Now)
                             {
@@ -403,10 +427,9 @@ namespace Proyecto_Club_Deportivo
                     }
 
                     // Determinar vencimiento
-                    if (comboActividad.Text.ToUpper().Contains("CUOTA"))
-                        fechaVencimiento = fechaPago.AddMonths(1);
-                    else
-                        fechaVencimiento = CalcularProximaClase(conexion, actividadId, fechaPago);
+                    fechaVencimiento = comboActividad.Text.ToUpper().Contains("CUOTA")
+                        ? fechaPago.AddMonths(1)
+                        : CalcularProximaClase(conexion, actividadId, fechaPago);
 
                     // Aplicar descuento real si es efectivo
                     decimal montoFinal = metodoSeleccionado.Equals("Efectivo", StringComparison.OrdinalIgnoreCase)
@@ -424,7 +447,6 @@ namespace Proyecto_Club_Deportivo
                         cmd.Parameters.AddWithValue("@monto", montoFinal);
                         cmd.Parameters.AddWithValue("@fecha_pago", fechaPago);
                         cmd.Parameters.AddWithValue("@metodo", metodoSeleccionado);
-                        cmd.Parameters.AddWithValue("@fecha_vencimiento", fechaVencimiento);
                         cmd.Parameters.AddWithValue("@cuotas", cuotas.HasValue ? (object)cuotas.Value : DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
@@ -463,9 +485,7 @@ namespace Proyecto_Club_Deportivo
 
             formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
             if (principal != null)
-            {
                 principal.Show();
-            }
             else
             {
                 principal = new formPrincipal();
@@ -526,9 +546,9 @@ namespace Proyecto_Club_Deportivo
                     tabla.AddCell(cuotas.HasValue ? cuotas.Value.ToString() : "-");
                 }
 
+
                 tabla.AddCell("Fecha de vencimiento:");
                 tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
-
 
                 doc.Add(tabla);
                 doc.Add(new Paragraph(" "));
@@ -565,7 +585,6 @@ namespace Proyecto_Club_Deportivo
                 string nombreArchivo = $"Carnet_{nombre}_{apellido}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 string rutaArchivo = Path.Combine(carpetaCarnets, nombreArchivo);
 
-                // Tamaño carnet + márgenes mínimos
                 iTextSharp.text.Rectangle tamaño = new iTextSharp.text.Rectangle(250, 150);
                 using (FileStream fs = new FileStream(rutaArchivo, FileMode.Create))
                 {
@@ -574,27 +593,23 @@ namespace Proyecto_Club_Deportivo
                         PdfWriter writer = PdfWriter.GetInstance(doc, fs);
                         doc.Open();
 
-                        // Estilos del carnet de socio
                         PdfContentByte fondo = writer.DirectContentUnder;
                         fondo.SetColorFill(new iTextSharp.text.BaseColor(173, 216, 230));
                         fondo.Rectangle(0, 0, tamaño.Width, tamaño.Height);
                         fondo.Fill();
 
-
                         var fuenteTitulo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.WHITE);
                         var fuenteCampo = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLACK);
                         var fuenteDato = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8, iTextSharp.text.Font.NORMAL, iTextSharp.text.BaseColor.BLACK);
 
-                       
                         PdfPTable tablaPrincipal = new PdfPTable(2);
                         tablaPrincipal.TotalWidth = tamaño.Width - 10;
                         tablaPrincipal.LockedWidth = true;
                         tablaPrincipal.SetWidths(new float[] { 1f, 2f });
                         tablaPrincipal.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-                        
                         PdfPCell celdaFoto = new PdfPCell(new Phrase("Foto 4x4", fuenteDato));
-                        celdaFoto.FixedHeight = 80; // más bajo
+                        celdaFoto.FixedHeight = 80;
                         celdaFoto.HorizontalAlignment = Element.ALIGN_CENTER;
                         celdaFoto.VerticalAlignment = Element.ALIGN_MIDDLE;
                         celdaFoto.Border = iTextSharp.text.Rectangle.BOX;
@@ -602,12 +617,10 @@ namespace Proyecto_Club_Deportivo
                         celdaFoto.BackgroundColor = new iTextSharp.text.BaseColor(220, 220, 220);
                         tablaPrincipal.AddCell(celdaFoto);
 
-                       
                         PdfPTable tablaDatos = new PdfPTable(2);
                         tablaDatos.WidthPercentage = 100;
                         tablaDatos.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-                        
                         PdfPCell celdaTitulo = new PdfPCell(new Phrase("Club Deportivo 29", fuenteTitulo));
                         celdaTitulo.Colspan = 2;
                         celdaTitulo.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -616,15 +629,12 @@ namespace Proyecto_Club_Deportivo
                         celdaTitulo.Padding = 3;
                         tablaDatos.AddCell(celdaTitulo);
 
-                       
                         tablaDatos.AddCell(new Phrase("Nombre", fuenteDato));
                         tablaDatos.AddCell(new Phrase(nombre, fuenteCampo));
 
-                        
                         tablaDatos.AddCell(new Phrase("Apellido", fuenteDato));
                         tablaDatos.AddCell(new Phrase(apellido, fuenteCampo));
 
-                        
                         tablaDatos.AddCell(new Phrase("N° Socio", fuenteDato));
                         tablaDatos.AddCell(new Phrase(numeroSocio, fuenteCampo));
                         tablaDatos.AddCell(new Phrase("Desde", fuenteDato));
@@ -639,7 +649,6 @@ namespace Proyecto_Club_Deportivo
                     }
                 }
 
-                // Abre el archivo
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
                     FileName = rutaArchivo,
@@ -652,11 +661,8 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-
-
         private void carnet_Click(object sender, EventArgs e)
         {
-            // Verificamos que los campos no estén vacíos
             if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text) ||
                 string.IsNullOrWhiteSpace(txtUserID.Text))
@@ -665,15 +671,13 @@ namespace Proyecto_Club_Deportivo
                 return;
             }
 
-            
             GenerarCarnetPDF(
                 txtNombre.Text,
                 txtApellido.Text,
                 txtUserID.Text,
-                DateTime.Now 
+                DateTime.Now
             );
         }
-
     }
 }
 
