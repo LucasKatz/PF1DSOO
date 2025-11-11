@@ -45,6 +45,12 @@ namespace Proyecto_Club_Deportivo
             comboCuotas.DropDownStyle = ComboBoxStyle.DropDownList;
             comboCuotas.SelectedIndex = -1;
             comboCuotas.Visible = false;
+
+            // Asegurarse que labels/controles de habilitación estén ocultos al iniciar
+            Habilitacion.Visible = false;
+            Vencimiento.Visible = false;
+            label1.Visible = false;
+            label2.Visible = false;
         }
 
         private void registroCuota_Load(object sender, EventArgs e)
@@ -230,10 +236,8 @@ namespace Proyecto_Club_Deportivo
                                             Console.WriteLine("⚠️ Usuario sin registro de habilitación.");
                                         }
                                     }
-                                
-                                
-                            }
-                            else
+                                }
+                                else
                                 {
                                     // 🔸 Si NO es socio
                                     CargarActividades();
@@ -275,9 +279,6 @@ namespace Proyecto_Club_Deportivo
                 }
             }
         }
-
-
-
 
         private void CargarSoloCuota()
         {
@@ -349,7 +350,7 @@ namespace Proyecto_Club_Deportivo
             {
                 decimal precioFinal = precioBase * (1 + cuotaSeleccionada.Interes);
                 txtPrecio.Text = precioFinal.ToString("0.00");
-                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con 0% de interès");
+                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con {cuotaSeleccionada.Interes * 100}% de interés");
             }
         }
 
@@ -360,15 +361,15 @@ namespace Proyecto_Club_Deportivo
             public int ActividadId { get; set; }
             public decimal Monto { get; set; }
             public DateTime FechaPago { get; set; }
-            public DateTime FechaVencimiento { get; set; }
+            public DateTime FechaActividad { get; set; }
             public string Metodo { get; set; }
             public int? Cuotas { get; set; }
             public string Concepto { get; set; }
 
             public void InsertarEnBD(MySqlConnection conexion)
             {
-                string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, metodo, cuotas)
-                                       VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago, @metodo, @cuotas);";
+                string insertQuery = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, fecha_vencimiento, metodo, cuotas, concepto)
+                                       VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago, @fecha_vencimiento, @metodo, @cuotas, @concepto);";
 
                 using (MySqlCommand cmd = new MySqlCommand(insertQuery, conexion))
                 {
@@ -376,8 +377,10 @@ namespace Proyecto_Club_Deportivo
                     cmd.Parameters.AddWithValue("@actividad_id", ActividadId);
                     cmd.Parameters.AddWithValue("@monto", Monto);
                     cmd.Parameters.AddWithValue("@fecha_pago", FechaPago);
+                    cmd.Parameters.AddWithValue("@fecha_vencimiento", FechaActividad);
                     cmd.Parameters.AddWithValue("@metodo", Metodo);
                     cmd.Parameters.AddWithValue("@cuotas", Cuotas.HasValue ? (object)Cuotas.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@concepto", Concepto ?? ""); // si Concepto es null, insertar cadena vacía
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -423,7 +426,7 @@ namespace Proyecto_Club_Deportivo
             }
             else
             {
-                cuotas = null; // efectivo o transferencia
+                cuotas = null; 
             }
 
             DateTime fechaPago = DateTime.Now;
@@ -466,29 +469,122 @@ namespace Proyecto_Club_Deportivo
                         ? Math.Round(precioIngresado * 0.90m, 2)
                         : precioIngresado;
 
-                    Pago pago = new Pago
+                    string concepto = comboActividad.Text;
+
+                    // 👉 Si el concepto es una cuota social, creamos un objeto CuotaSocial (sin propiedad Concepto)
+                    if (concepto.ToUpper().Contains("CUOTA"))
                     {
-                        UsuarioId = usuarioId,
-                        ActividadId = actividadId,
-                        Monto = montoFinal,
-                        FechaPago = fechaPago,
-                        FechaVencimiento = fechaVencimiento,
-                        Metodo = metodoSeleccionado,
-                        Cuotas = cuotas,
-                        Concepto = comboActividad.Text
-                    };
+                        CuotaSocial cuota = new CuotaSocial(
+                            usuarioId,
+                            actividadId,
+                            montoFinal,
+                            fechaPago,
+                            fechaVencimiento,
+                            metodoSeleccionado,
+                            cuotas
+                        );
 
-                    pago.InsertarEnBD(conexion);
+                        cuota.Insertar(conexion);
 
-                    GenerarComprobantePDF(txtNombre.Text, txtApellido.Text, tipoDocu.SelectedItem.ToString(),
-                        docuValue.Text, montoFinal.ToString("0.00"), pago.Concepto,
-                        pago.FechaPago, pago.FechaVencimiento, pago.Metodo, pago.Cuotas);
+                        // Para el comprobante pasamos texto fijo "CUOTA SOCIAL"
+                        GenerarComprobantePDF(
+                            txtNombre.Text,
+                            txtApellido.Text,
+                            tipoDocu.SelectedItem.ToString(),
+                            docuValue.Text,
+                            cuota.Monto.ToString("0.00"),
+                            "CUOTA SOCIAL",
+                            cuota.FechaPago,
+                            cuota.FechaVencimiento,
+                            cuota.Metodo,
+                            cuota.CantidadCuotas
+                        );
 
-                    MessageBox.Show("Pago registrado y comprobante generado correctamente.");
+                        MessageBox.Show("Cuota social registrada y comprobante generado correctamente.");
+                    }
+                    else
+                    {
+                        // 👉 Si no es cuota, usamos la clase Pago normal
+                        Pago pago = new Pago
+                        {
+                            UsuarioId = usuarioId,
+                            ActividadId = actividadId,
+                            Monto = montoFinal,
+                            FechaPago = fechaPago,
+                            FechaActividad = fechaVencimiento,
+                            Metodo = metodoSeleccionado,
+                            Cuotas = cuotas,
+                            Concepto = concepto
+                        };
+
+                        pago.InsertarEnBD(conexion);
+
+                        GenerarComprobantePDF(
+                            txtNombre.Text,
+                            txtApellido.Text,
+                            tipoDocu.SelectedItem.ToString(),
+                            docuValue.Text,
+                            montoFinal.ToString("0.00"),
+                            pago.Concepto,
+                            pago.FechaPago,
+                            pago.FechaActividad,
+                            pago.Metodo,
+                            pago.Cuotas
+                        );
+
+                        MessageBox.Show("Pago registrado y comprobante generado correctamente.");
+                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error al registrar el pago: " + ex.Message);
+                }
+            }
+        }
+
+        //============= CLASE CUOTA SOCIAL ==================
+
+        public class CuotaSocial
+        {
+            public int UsuarioId { get; set; }
+            public int ActividadId { get; set; }
+            public decimal Monto { get; set; }
+            public DateTime FechaPago { get; set; }
+            public DateTime FechaVencimiento { get; set; }
+            public string Metodo { get; set; }
+            public int? CantidadCuotas { get; set; }
+
+            // Constructor sin "Concepto"
+            public CuotaSocial(int usuarioId, int actividadId, decimal monto,
+                         DateTime fechaPago, DateTime fechaVencimiento, string metodo, int? cantidadCuotas)
+            {
+                UsuarioId = usuarioId;
+                ActividadId = actividadId;
+                Monto = monto;
+                FechaPago = fechaPago;
+                FechaVencimiento = fechaVencimiento;
+                Metodo = metodo;
+                CantidadCuotas = cantidadCuotas;
+            }
+
+            // Método para insertar en la BD (sin campo concepto)
+            public void Insertar(MySqlConnection conexion)
+            {
+                string query = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, 
+                           fecha_vencimiento, metodo, cuotas)
+                         VALUES (@usuario_id, @actividad_id, @monto, @fecha_pago, 
+                           @fecha_vencimiento, @metodo, @cuotas);";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, conexion))
+                {
+                    cmd.Parameters.AddWithValue("@usuario_id", UsuarioId);
+                    cmd.Parameters.AddWithValue("@actividad_id", ActividadId);
+                    cmd.Parameters.AddWithValue("@monto", Monto);
+                    cmd.Parameters.AddWithValue("@fecha_pago", FechaPago);
+                    cmd.Parameters.AddWithValue("@fecha_vencimiento", FechaVencimiento);
+                    cmd.Parameters.AddWithValue("@metodo", Metodo);
+                    cmd.Parameters.AddWithValue("@cuotas", (object)CantidadCuotas ?? DBNull.Value);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
@@ -596,7 +692,6 @@ namespace Proyecto_Club_Deportivo
                     tablaPrincipal.SetWidths(new float[] { 1f, 2f });
                     tablaPrincipal.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-
                     PdfPCell celdaFoto = new PdfPCell(new Phrase("Foto 4x4", fuenteDato))
                     {
                         FixedHeight = 80,
@@ -610,7 +705,6 @@ namespace Proyecto_Club_Deportivo
                     PdfPTable tablaDatos = new PdfPTable(2);
                     tablaDatos.WidthPercentage = 100;
                     tablaDatos.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-
 
                     PdfPCell celdaTitulo = new PdfPCell(new Phrase("Club Deportivo 29", fuenteTitulo))
                     {
@@ -695,4 +789,5 @@ namespace Proyecto_Club_Deportivo
         }
     }
 }
+
 
