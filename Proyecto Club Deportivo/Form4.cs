@@ -86,7 +86,7 @@ namespace Proyecto_Club_Deportivo
             {
                 Nombre = nombre_value.Text.Trim(),
                 Apellido = apellido_value.Text.Trim(),
-                DNI = documento_value.Text.Trim(),
+                numDocumento = documento_value.Text.Trim(),
                 Telefono = tel_value.Text.Trim(),
                 Email = email_value.Text.Trim(),
                 Nacimiento = nacimiento_value.Text.Trim(),
@@ -96,7 +96,7 @@ namespace Proyecto_Club_Deportivo
             };
 
             // Se busca si la persona ya se encuentra registrada
-            if (AlumnoYaRegistrado(nuevoPersona.TipoDocumento, nuevoPersona.DNI))
+            if (PersonaYaRegistrada(nuevoPersona.TipoDocumento, nuevoPersona.numDocumento))
             {
                 MessageBox.Show("La persona ya se encuentra registrada en la base de datos.",
                     "Registro duplicado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -110,7 +110,7 @@ namespace Proyecto_Club_Deportivo
         }
 
         // Función que busca al alumno para chequear que no esté registrado
-        private bool AlumnoYaRegistrado(string tipoDocumento, string dni)
+        private bool PersonaYaRegistrada(string tipoDocumento, string dni)
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
@@ -175,7 +175,7 @@ namespace Proyecto_Club_Deportivo
     {
         public string Nombre { get; set; }
         public string Apellido { get; set; }
-        public string DNI { get; set; }
+        public string numDocumento { get; set; }
         public string Telefono { get; set; }
         public string Email { get; set; }
         public string Nacimiento { get; set; }

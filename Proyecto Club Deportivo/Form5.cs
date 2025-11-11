@@ -20,17 +20,17 @@ namespace Proyecto_Club_Deportivo
         // Botón "Registrar Socio"
         private void altaSocio_Click(object sender, EventArgs e)
         {
-            RegistrarAlumno(true);
+            RegistrarPersona(true);
         }
 
         // Botón "Registrar No Socio"
         private void altaNoSocio_Click(object sender, EventArgs e)
         {
-            RegistrarAlumno(false);
+            RegistrarPersona(false);
         }
 
         // Método que hace la inserción en usuariosRegistrados y luego en Socios/NoSocios
-        private void RegistrarAlumno(bool esSocio)
+        private void RegistrarPersona(bool esSocio)
         {
             try
             {
@@ -54,7 +54,7 @@ VALUES
                                 cmd.Parameters.AddWithValue("@nombre", persona.Nombre ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@apellido", persona.Apellido ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@tipo_documento", persona.TipoDocumento ?? "DNI");
-                                cmd.Parameters.AddWithValue("@dni", persona.DNI ?? (object)DBNull.Value);
+                                cmd.Parameters.AddWithValue("@dni", persona.numDocumento ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@telefono", persona.Telefono ?? (object)DBNull.Value);
                                 cmd.Parameters.AddWithValue("@email", persona.Email ?? (object)DBNull.Value);
 

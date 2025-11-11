@@ -146,12 +146,12 @@ namespace Proyecto_Club_Deportivo
                             CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
                             FROM usuariosRegistrados u
                             LEFT JOIN Socios s ON u.id = s.usuario_id
-                            WHERE u.tipo_documento = @tipo AND u.dni = @dni;";
+                            WHERE u.tipo_documento = @tipo AND u.numDocumento = @numDocumento;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     {
                         cmd.Parameters.AddWithValue("@tipo", tipo);
-                        cmd.Parameters.AddWithValue("@dni", numero);
+                        cmd.Parameters.AddWithValue("@numDocumento", numero);
 
                         using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -424,6 +424,7 @@ namespace Proyecto_Club_Deportivo
                         cmd.Parameters.AddWithValue("@monto", montoFinal);
                         cmd.Parameters.AddWithValue("@fecha_pago", fechaPago);
                         cmd.Parameters.AddWithValue("@metodo", metodoSeleccionado);
+                        cmd.Parameters.AddWithValue("@fecha_vencimiento", fechaVencimiento);
                         cmd.Parameters.AddWithValue("@cuotas", cuotas.HasValue ? (object)cuotas.Value : DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
@@ -525,11 +526,9 @@ namespace Proyecto_Club_Deportivo
                     tabla.AddCell(cuotas.HasValue ? cuotas.Value.ToString() : "-");
                 }
 
-                if (!concepto.ToUpper().Contains("CUOTA"))
-                {
-                    tabla.AddCell("Vencimiento:");
-                    tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
-                }
+                tabla.AddCell("Fecha de vencimiento:");
+                tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
+
 
                 doc.Add(tabla);
                 doc.Add(new Paragraph(" "));
