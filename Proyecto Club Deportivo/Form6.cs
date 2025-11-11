@@ -128,6 +128,12 @@ namespace Proyecto_Club_Deportivo
             string tipo = tipoDocu.SelectedItem?.ToString() ?? "";
             string numero = docuValue.Text.Trim();
 
+            // 🔸 Siempre empezamos ocultando los campos
+            Habilitacion.Visible = false;
+            Vencimiento.Visible = false;
+            label1.Visible = false;
+            label2.Visible = false;
+
             if (string.IsNullOrEmpty(tipo) || string.IsNullOrEmpty(numero))
             {
                 MessageBox.Show("Complete tipo y número de documento antes de buscar.");
@@ -140,10 +146,10 @@ namespace Proyecto_Club_Deportivo
                 {
                     conexion.Open();
                     string query = @"SELECT u.id, u.nombre, u.apellido,
-                                    CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
-                                    FROM usuariosRegistrados u
-                                    LEFT JOIN Socios s ON u.id = s.usuario_id
-                                    WHERE u.tipo_documento = @tipo AND u.numDocumento = @numDocumento;";
+                             CASE WHEN s.usuario_id IS NOT NULL THEN 'SI' ELSE 'NO' END AS socio
+                             FROM usuariosRegistrados u
+                             LEFT JOIN Socios s ON u.id = s.usuario_id
+                             WHERE u.tipo_documento = @tipo AND u.numDocumento = @numDocumento;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conexion))
                     {
@@ -165,11 +171,92 @@ namespace Proyecto_Club_Deportivo
                                 {
                                     CargarSoloCuota();
                                     carnet.Visible = true;
+
+                                    // 🔹 Cerrar reader para realizar nuevas consultas
+                                    reader.Close();
+
+                                    int usuarioId = Convert.ToInt32(txtUserID.Text);
+
+                                    // 🔹 Verificar si está habilitado
+                                    string habilitadoQuery = @"SELECT fecha_vencimiento 
+                                                       FROM Habilitados 
+                                                       WHERE usuario_id = @usuario_id
+                                                       ORDER BY fecha_vencimiento DESC LIMIT 1;";
+
+                                    using (MySqlCommand cmdH = new MySqlCommand(habilitadoQuery, conexion))
+                                    {
+                                        cmdH.Parameters.AddWithValue("@usuario_id", usuarioId);
+                                        object fechaH = cmdH.ExecuteScalar();
+
+                                        if (fechaH != null && fechaH != DBNull.Value)
+                                        {
+                                            DateTime vencimiento = Convert.ToDateTime(fechaH);
+
+                                            // ✅ Mostrar campos solo si hay dato
+                                            Habilitacion.Visible = true;
+                                            Vencimiento.Visible = true;
+                                            label1.Visible = true;
+                                            label2.Visible = true;
+
+                                            Habilitacion.Text = "HABILITADO";
+                                            Vencimiento.Text = vencimiento.ToString("dd/MM/yyyy");
+                                            Console.WriteLine($"✅ Usuario habilitado hasta {vencimiento:dd/MM/yyyy}");
+                                            return;
+                                        }
+                                    }
+
+                                    // 🔹 Si no está en Habilitados, revisar NoHabilitados
+                                    string noHabilitadoQuery = @"SELECT fecha_vencimiento 
+                                                         FROM NoHabilitados 
+                                                         WHERE usuario_id = @usuario_id
+                                                         ORDER BY fecha_vencimiento DESC LIMIT 1;";
+
+                                    using (MySqlCommand cmdN = new MySqlCommand(noHabilitadoQuery, conexion))
+                                    {
+                                        cmdN.Parameters.AddWithValue("@usuario_id", usuarioId);
+                                        object fechaN = cmdN.ExecuteScalar();
+
+                                        if (fechaN != null && fechaN != DBNull.Value)
+                                        {
+                                            DateTime vencimiento = Convert.ToDateTime(fechaN);
+
+                                            // ✅ Mostrar campos solo si hay dato
+                                            Habilitacion.Visible = true;
+                                            Vencimiento.Visible = true;
+                                            label1.Visible = true;
+                                            label2.Visible = true;
+
+                                            Habilitacion.Text = "NO HABILITADO";
+                                            Vencimiento.Text = vencimiento.ToString("dd/MM/yyyy");
+                                            Console.WriteLine($"❌ Usuario no habilitado (venció el {vencimiento:dd/MM/yyyy})");
+                                        }
+                                        else
+                                        {
+                                            // 🔸 Ocultar si no hay registro alguno
+                                            Habilitacion.Visible = false;
+                                            Vencimiento.Visible = false;
+                                            label1.Visible = false;
+                                            label2.Visible = false;
+
+                                            Habilitacion.Text = "-";
+                                            Vencimiento.Text = "-";
+                                            Console.WriteLine("⚠️ Usuario sin registro de habilitación.");
+                                        }
+                                    }
                                 }
                                 else
                                 {
+                                    // 🔸 Si NO es socio
                                     CargarActividades();
                                     carnet.Visible = false;
+
+                                    Habilitacion.Visible = false;
+                                    Vencimiento.Visible = false;
+                                    label1.Visible = false;
+                                    label2.Visible = false;
+
+                                    Habilitacion.Text = "-";
+                                    Vencimiento.Text = "-";
                                 }
                             }
                             else
@@ -181,6 +268,14 @@ namespace Proyecto_Club_Deportivo
                                 txtUserID.Clear();
                                 comboActividad.Enabled = false;
                                 carnet.Visible = false;
+
+                                Habilitacion.Visible = false;
+                                Vencimiento.Visible = false;
+                                label1.Visible = false;
+                                label2.Visible = false;
+
+                                Habilitacion.Text = "-";
+                                Vencimiento.Text = "-";
                             }
                         }
                     }
@@ -191,6 +286,9 @@ namespace Proyecto_Club_Deportivo
                 }
             }
         }
+
+
+
 
         private void CargarSoloCuota()
         {
@@ -428,7 +526,7 @@ namespace Proyecto_Club_Deportivo
 
                 tabla.AddCell("Vencimiento:"); tabla.AddCell(fechaVencimiento.ToString("dd/MM/yyyy"));
                 doc.Add(tabla);
-                doc.Add(new Paragraph("\nGracias por su pago.",new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
+                doc.Add(new Paragraph("\nGracias por su pago.", new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.ITALIC)));
 
                 doc.Close();
 
@@ -525,7 +623,9 @@ namespace Proyecto_Club_Deportivo
                     tablaDatos.AddCell(new Phrase("Desde", fuenteDato));
                     tablaDatos.AddCell(new Phrase(fechaAlta.ToString("dd/MM/yyyy"), fuenteCampo));
 
-                    PdfPCell celdaDatos = new PdfPCell(tablaDatos) { Border = iTextSharp.text.Rectangle.NO_BORDER
+                    PdfPCell celdaDatos = new PdfPCell(tablaDatos)
+                    {
+                        Border = iTextSharp.text.Rectangle.NO_BORDER
                     };
                     tablaPrincipal.AddCell(celdaDatos);
 
@@ -543,6 +643,48 @@ namespace Proyecto_Club_Deportivo
             {
                 MessageBox.Show("Error al generar carnet PDF: " + ex.Message);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+
+            formPrincipal principal = Application.OpenForms["formPrincipal"] as formPrincipal;
+            if (principal != null)
+            {
+                principal.Show();
+            }
+            else
+            {
+                principal = new formPrincipal();
+                principal.Show();
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+
+        }
+
+        private void Habilitacion_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Vencimiento_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

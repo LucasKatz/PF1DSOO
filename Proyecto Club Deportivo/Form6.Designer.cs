@@ -53,7 +53,9 @@
             cuotas = new Label();
             descuento = new Label();
             label1 = new Label();
-            textBox1 = new TextBox();
+            Vencimiento = new TextBox();
+            label2 = new Label();
+            Habilitacion = new TextBox();
             SuspendLayout();
             // 
             // TipoDocuRegistroPago
@@ -205,7 +207,7 @@
             button1.TabIndex = 16;
             button1.Text = "Salir";
             button1.UseVisualStyleBackColor = true;
-       
+            button1.Click += button1_Click;
             // 
             // button2
             // 
@@ -215,7 +217,7 @@
             button2.TabIndex = 17;
             button2.Text = "Volver";
             button2.UseVisualStyleBackColor = true;
-        
+            button2.Click += button2_Click;
             // 
             // carnet
             // 
@@ -279,18 +281,39 @@
             // 
             label1.AutoSize = true;
             label1.ForeColor = SystemColors.ButtonHighlight;
-            label1.Location = new Point(589, 285);
+            label1.Location = new Point(888, 281);
             label1.Name = "label1";
-            label1.Size = new Size(153, 20);
+            label1.Size = new Size(154, 20);
             label1.TabIndex = 24;
-            label1.Text = "Fecha de Habilitación";
+            label1.Text = "Fecha de Vencimiento";
+            label1.Click += label1_Click;
             // 
-            // textBox1
+            // Vencimiento
             // 
-            textBox1.Location = new Point(785, 285);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(176, 27);
-            textBox1.TabIndex = 25;
+            Vencimiento.Location = new Point(1066, 281);
+            Vencimiento.Name = "Vencimiento";
+            Vencimiento.Size = new Size(198, 27);
+            Vencimiento.TabIndex = 27;
+            Vencimiento.TextChanged += Vencimiento_TextChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.ForeColor = SystemColors.ButtonHighlight;
+            label2.Location = new Point(577, 281);
+            label2.Name = "label2";
+            label2.Size = new Size(80, 20);
+            label2.TabIndex = 26;
+            label2.Text = "Habilitado";
+            label2.Click += label2_Click;
+            // 
+            // Habilitacion
+            // 
+            Habilitacion.Location = new Point(663, 281);
+            Habilitacion.Name = "Habilitacion";
+            Habilitacion.Size = new Size(196, 27);
+            Habilitacion.TabIndex = 0;
+            Habilitacion.TextChanged += Habilitacion_TextChanged;
             // 
             // registroCuota
             // 
@@ -298,7 +321,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(1359, 698);
-            Controls.Add(textBox1);
+            Controls.Add(Habilitacion);
+            Controls.Add(label2);
+            Controls.Add(Vencimiento);
             Controls.Add(label1);
             Controls.Add(descuento);
             Controls.Add(cuotas);
@@ -358,6 +383,8 @@
         private Label cuotas;
         private Label descuento;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox Vencimiento;
+        private Label label2;
+        private TextBox Habilitacion;
     }
 }
