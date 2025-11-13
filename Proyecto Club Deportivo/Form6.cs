@@ -63,8 +63,8 @@ namespace Proyecto_Club_Deportivo
         {
             var cuotasDisponibles = new List<Cuota>
             {
-                new Cuota { Cantidad = 3, Interes = 0.05m, Descripcion = "3 cuotas (5% interés)" },
-                new Cuota { Cantidad = 6, Interes = 0.10m, Descripcion = "6 cuotas (10% interés)" }
+                new Cuota { Cantidad = 3,  Descripcion = "3 cuotas (sin interés)" },
+                new Cuota { Cantidad = 6,  Descripcion = "6 cuotas (sin interés)" }
             };
 
             comboCuotas.DataSource = cuotasDisponibles;
@@ -350,7 +350,7 @@ namespace Proyecto_Club_Deportivo
             {
                 decimal precioFinal = precioBase * (1 + cuotaSeleccionada.Interes);
                 txtPrecio.Text = precioFinal.ToString("0.00");
-                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas con {cuotaSeleccionada.Interes * 100}% de interés");
+                MessageBox.Show($"Pago en {cuotaSeleccionada.Cantidad} cuotas sin interés");
             }
         }
 
@@ -554,7 +554,7 @@ namespace Proyecto_Club_Deportivo
             public string Metodo { get; set; }
             public int? CantidadCuotas { get; set; }
 
-            // Constructor sin "Concepto"
+            // Constructor 
             public CuotaSocial(int usuarioId, int actividadId, decimal monto,
                          DateTime fechaPago, DateTime fechaVencimiento, string metodo, int? cantidadCuotas)
             {
@@ -567,7 +567,7 @@ namespace Proyecto_Club_Deportivo
                 CantidadCuotas = cantidadCuotas;
             }
 
-            // Método para insertar en la BD (sin campo concepto)
+            // Método para insertar en la BD 
             public void Insertar(MySqlConnection conexion)
             {
                 string query = @"INSERT INTO Pagos (usuario_id, actividad_id, monto, fecha_pago, 
@@ -768,25 +768,7 @@ namespace Proyecto_Club_Deportivo
 
         }
 
-        private void Habilitacion_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Vencimiento_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        
     }
 }
 

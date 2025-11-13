@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Proyecto_Club_Deportivo.Datos;
 using System;
 using System.Configuration;
 using System.Windows.Forms;
@@ -10,7 +11,7 @@ namespace Proyecto_Club_Deportivo
         public ingresoForm()
         {
             InitializeComponent();
-            textPassword.UseSystemPasswordChar = true; // para mayor seguridad en password se ocultan caracteres
+            textPassword.UseSystemPasswordChar = true; // ocultar caracteres del password
             this.Load += ingresoForm_Load;
         }
 
@@ -20,16 +21,7 @@ namespace Proyecto_Club_Deportivo
 
             public ConexionBD()
             {
-                //Credenciales en app.Config por cuestiones de seguridad
-                string password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-               
-                string baseConnection = ConfigurationManager.ConnectionStrings["ConexionBD"].ConnectionString;
-
-                
-                string cadenaConexion = string.Format(baseConnection, password);
-
-                conexion = new MySqlConnection(cadenaConexion);
+                conexion = Conexion.GetInstancia().CrearConexion();
             }
 
             public bool ProbarConexion()
@@ -49,9 +41,7 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-        // Aca se prueba la conexión y devuelve mensaje
         private void ingresoForm_Load(object sender, EventArgs e)
-
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             ConexionBD conexion = new ConexionBD();
@@ -63,29 +53,23 @@ namespace Proyecto_Club_Deportivo
             }
             else
             {
-                MessageBox.Show(" Error al conectar con la base de datos", "Conexión",
+                MessageBox.Show("Error al conectar con la base de datos", "Conexión",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
-        //Botón de Login
         private void botonIngresar_Click(object sender, EventArgs e)
         {
             string usuario = textUsuario.Text.Trim();
             string password = textPassword.Text.Trim();
 
-            // Validación de campos vacíos
             if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
             {
                 MessageBox.Show("Por favor, complete todos los campos antes de continuar.",
-                                "Campos incompletos",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                return; 
+                                "Campos incompletos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
-            // Credenciales en app.Config por cuestiones de seguridad
             string adminUser = ConfigurationManager.AppSettings["AdminUser"];
             string adminPassword = ConfigurationManager.AppSettings["AdminPassword"];
 
@@ -102,24 +86,16 @@ namespace Proyecto_Club_Deportivo
             }
         }
 
-
-        //Limpia el texto de los campos a completar
-
         private void botonLimpiar_Click(object sender, EventArgs e)
         {
             textUsuario.Clear();
             textPassword.Clear();
         }
 
-
-        //Boton para salir de la app
-
         private void botonSalir_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
-
-        
-       
     }
 }
+

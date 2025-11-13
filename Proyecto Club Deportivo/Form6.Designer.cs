@@ -286,7 +286,7 @@
             label1.Size = new Size(154, 20);
             label1.TabIndex = 24;
             label1.Text = "Fecha de Vencimiento";
-            label1.Click += label1_Click;
+          
             // 
             // Vencimiento
             // 
@@ -294,7 +294,7 @@
             Vencimiento.Name = "Vencimiento";
             Vencimiento.Size = new Size(198, 27);
             Vencimiento.TabIndex = 27;
-            Vencimiento.TextChanged += Vencimiento_TextChanged;
+           
             // 
             // label2
             // 
@@ -305,7 +305,7 @@
             label2.Size = new Size(80, 20);
             label2.TabIndex = 26;
             label2.Text = "Habilitado";
-            label2.Click += label2_Click;
+         
             // 
             // Habilitacion
             // 
@@ -313,7 +313,7 @@
             Habilitacion.Name = "Habilitacion";
             Habilitacion.Size = new Size(196, 27);
             Habilitacion.TabIndex = 0;
-            Habilitacion.TextChanged += Habilitacion_TextChanged;
+         
             // 
             // registroCuota
             // 
